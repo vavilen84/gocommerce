@@ -16,6 +16,7 @@ import (
 )
 
 type Migration struct {
+	BaseModel
 	Id       uint32 `json:"id" column:"id"`
 	Version  int64  `json:"version" column:"version"`
 	Filename string `json:"filename" column:"filename"`
@@ -25,15 +26,17 @@ func (Migration) GetTableName() string {
 	return constants.MigrationsTableName
 }
 
-func (m Migration) ValidateByScenario() []error {
+func (m *Migration) ValidateByScenario() {
 	validationMap := make(ValidationMap)
 	validationMap = ValidationMap{
 		constants.ScenarioCreate: ValidationRules{
-			"Version":  "required",
-			"Filename": "required",
+			"CreatedAt": "required",
+			"UpdatedAt": "required",
+			"Version":   "required",
+			"Filename":  "required",
 		},
 	}
-	return validateByScenario(m, validationMap)
+	m.ValidationErrors = validateByScenario(m, validationMap)
 }
 
 func (m Migration) GetId() uint32 {
@@ -102,7 +105,7 @@ func performMigrateTx(ctx context.Context, conn *sql.Conn, m Migration) error {
 		return beginTxErr
 	}
 
-	execErr := database.TxInsert(ctx, tx, m)
+	execErr := database.TxInsert(ctx, tx, &m)
 	if execErr != nil {
 		_ = tx.Rollback()
 		log.Fatal(execErr)
@@ -134,6 +137,14 @@ func apply(ctx context.Context, conn *sql.Conn, k int, list map[int64]Migration)
 	var version int64
 	err := row.Scan(&version)
 	if err == sql.ErrNoRows {
+
+		m.Scenario = constants.ScenarioCreate
+		m.ValidateByScenario()
+		if len(m.ValidationErrors) > 0 {
+			log.Println(m.ValidationErrors)
+			return helpers.MergeErrors(m.ValidationErrors)
+		}
+
 		err = performMigrateTx(ctx, conn, m)
 		if err != nil {
 			log.Println(err)
@@ -162,4 +173,8 @@ func CreateMigrationsTableIfNotExists(ctx context.Context, conn *sql.Conn) error
 		return err
 	}
 	return nil
+}
+
+func (m *Migration) Validate() {
+	m.ValidationErrors = validate(m)
 }

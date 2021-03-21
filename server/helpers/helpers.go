@@ -15,6 +15,14 @@ var (
 	charset    = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 )
 
+func MergeErrors(i []error) error {
+	errMsg := ""
+	for _, v := range i {
+		errMsg += v.Error() + "; "
+	}
+	return errors.New(errMsg)
+}
+
 func LogFatal(msg string) {
 	err := errors.New(msg)
 	LogError(err)

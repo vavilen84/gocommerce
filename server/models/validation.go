@@ -79,9 +79,13 @@ func ValidateStruct(s interface{}) error {
 	return nil
 }
 
-func Validate(s interface{}) (err error) {
-	err = ValidateStruct(s)
-	return
+func validate(s interface{}) []error {
+	errs := make([]error, 0)
+	err := ValidateStruct(s)
+	if err != nil {
+		errs = append(errs, err)
+	}
+	return errs
 }
 
 func validateByScenario(m interface{}, validationMap ValidationMap) []error {
