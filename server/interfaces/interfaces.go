@@ -4,5 +4,4 @@ type Model interface {
 	GetTableName() string
 	GetId() uint32
 	ValidateByScenario()
-	Validate()
 }

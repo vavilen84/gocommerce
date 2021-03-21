@@ -6,6 +6,7 @@ import (
 	"github.com/vavilen84/gocommerce/constants"
 	"github.com/vavilen84/gocommerce/database"
 	"github.com/vavilen84/gocommerce/helpers"
+	"github.com/vavilen84/gocommerce/types"
 	"io/ioutil"
 	"log"
 	"os"
@@ -16,27 +17,32 @@ import (
 )
 
 type Migration struct {
-	BaseModel
+	Scenario         types.Scenario
+	ValidationErrors types.ValidationErrors
+
 	Id       uint32 `json:"id" column:"id"`
 	Version  int64  `json:"version" column:"version"`
 	Filename string `json:"filename" column:"filename"`
+
+	CreatedAt int64 `json:"created_at" column:"created_at"`
+	UpdatedAt int64 `json:"updated_at" column:"updated_at"`
 }
 
 func (Migration) GetTableName() string {
-	return constants.MigrationsTableName
+	return constants.MigrationsDBTable
 }
 
 func (m *Migration) ValidateByScenario() {
-	validationMap := make(ValidationMap)
-	validationMap = ValidationMap{
-		constants.ScenarioCreate: ValidationRules{
-			"CreatedAt": "required",
-			"UpdatedAt": "required",
-			"Version":   "required",
-			"Filename":  "required",
+	validationMap := make(types.ValidationMap)
+	validationMap = types.ValidationMap{
+		constants.ScenarioCreate: types.ValidationRules{
+			constants.MigrationVersionField:   "required",
+			constants.MigrationFilenameField:  "required",
+			constants.MigrationCreatedAtField: "required",
+			constants.MigrationUpdatedAtField: "required",
 		},
 	}
-	m.ValidationErrors = validateByScenario(m, validationMap)
+	m.ValidationErrors = validateByScenario(m.Scenario, m, validationMap)
 }
 
 func (m Migration) GetId() uint32 {
@@ -133,7 +139,7 @@ func performMigrateTx(ctx context.Context, conn *sql.Conn, m Migration) error {
 
 func apply(ctx context.Context, conn *sql.Conn, k int, list map[int64]Migration) error {
 	m := list[int64(k)]
-	row := conn.QueryRowContext(ctx, `SELECT version FROM `+constants.MigrationsTableName+` WHERE version = ?`, m.Version)
+	row := conn.QueryRowContext(ctx, `SELECT version FROM `+m.GetTableName()+` WHERE version = ?`, m.Version)
 	var version int64
 	err := row.Scan(&version)
 	if err == sql.ErrNoRows {
@@ -158,7 +164,7 @@ func apply(ctx context.Context, conn *sql.Conn, k int, list map[int64]Migration)
 
 func CreateMigrationsTableIfNotExists(ctx context.Context, conn *sql.Conn) error {
 	query := `
-		CREATE TABLE IF NOT EXISTS ` + constants.MigrationsTableName + `
+		CREATE TABLE IF NOT EXISTS ` + constants.MigrationsDBTable + `
 		(
     		id INT UNSIGNED NOT NULL PRIMARY KEY,
 			version BIGINT UNSIGNED NOT NULL,
@@ -173,8 +179,4 @@ func CreateMigrationsTableIfNotExists(ctx context.Context, conn *sql.Conn) error
 		return err
 	}
 	return nil
-}
-
-func (m *Migration) Validate() {
-	m.ValidationErrors = validate(m)
 }
