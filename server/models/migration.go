@@ -3,16 +3,13 @@ package models
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"github.com/vavilen84/gocommerce/constants"
 	"github.com/vavilen84/gocommerce/database"
 	"github.com/vavilen84/gocommerce/helpers"
-	"gopkg.in/go-playground/validator.v9"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
-	"reflect"
 	"sort"
 	"strconv"
 	"strings"
@@ -20,7 +17,7 @@ import (
 
 type Migration struct {
 	Id       uint32 `json:"id" column:"id"`
-	Version  uint32 `json:"version" column:"version"`
+	Version  int64  `json:"version" column:"version"`
 	Filename string `json:"filename" column:"filename"`
 }
 
@@ -28,7 +25,7 @@ func (Migration) GetTableName() string {
 	return constants.MigrationsTableName
 }
 
-func (m Migration) ValidateByScenario(scenario Scenario) []error {
+func (m Migration) ValidateByScenario() []error {
 	validationMap := make(ValidationMap)
 	validationMap = ValidationMap{
 		constants.ScenarioCreate: ValidationRules{
@@ -36,22 +33,7 @@ func (m Migration) ValidateByScenario(scenario Scenario) []error {
 			"Filename": "required",
 		},
 	}
-	if _, ok := validationMap[scenario]; !ok {
-		helpers.LogFatal(fmt.Sprintf("No such scenario: %s", scenario))
-	}
-	errs := make([]error, 0)
-	validate := validator.New()
-	for fieldName, validation := range validationMap[scenario] {
-		field, ok := reflect.TypeOf(m).Elem().FieldByName(string(fieldName))
-		if !ok {
-			helpers.LogFatal(fmt.Sprintf("Field not found: %s", fieldName))
-		}
-		result := validate.Var(field, string(validation))
-		if result != nil {
-			errs = append(errs, result)
-		}
-	}
-	return errs
+	return validateByScenario(m, validationMap)
 }
 
 func (m Migration) GetId() uint32 {
@@ -69,13 +51,13 @@ func getMigration(info os.FileInfo) (err error, m Migration) {
 
 	m = Migration{
 		Filename: filename,
-		Version:  uint32(version),
+		Version:  int64(version),
 	}
 	return
 }
 
-func getMigrations() (err error, keys []int, list map[uint32]Migration) {
-	list = make(map[uint32]Migration)
+func getMigrations() (err error, keys []int, list map[int64]Migration) {
+	list = make(map[int64]Migration)
 	keys = make([]int, 0)
 	err = filepath.Walk(os.Getenv("PROJECT_ROOT")+"/"+constants.MigrationsFolder, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -146,8 +128,8 @@ func performMigrateTx(ctx context.Context, conn *sql.Conn, m Migration) error {
 	return nil
 }
 
-func apply(ctx context.Context, conn *sql.Conn, k int, list map[uint32]Migration) error {
-	m := list[uint32(k)]
+func apply(ctx context.Context, conn *sql.Conn, k int, list map[int64]Migration) error {
+	m := list[int64(k)]
 	row := conn.QueryRowContext(ctx, `SELECT version FROM `+constants.MigrationsTableName+` WHERE version = ?`, m.Version)
 	var version int64
 	err := row.Scan(&version)
@@ -168,8 +150,10 @@ func CreateMigrationsTableIfNotExists(ctx context.Context, conn *sql.Conn) error
 		CREATE TABLE IF NOT EXISTS ` + constants.MigrationsTableName + `
 		(
     		id INT UNSIGNED NOT NULL PRIMARY KEY,
-			version INT UNSIGNED NOT NULL,
-			filename varchar(255) NOT NULL
+			version BIGINT UNSIGNED NOT NULL,
+			filename varchar(255) NOT NULL,
+			created_at BIGINT UNSIGNED NOT NULL,
+			updated_at BIGINT UNSIGNED NOT NULL
 		) ENGINE=InnoDB CHARSET=utf8;
 	`
 	_, err := conn.ExecContext(ctx, query)
