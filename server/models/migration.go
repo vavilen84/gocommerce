@@ -6,7 +6,7 @@ import (
 	"github.com/vavilen84/gocommerce/constants"
 	"github.com/vavilen84/gocommerce/database"
 	"github.com/vavilen84/gocommerce/helpers"
-	"github.com/vavilen84/gocommerce/types"
+	"github.com/vavilen84/gocommerce/validation"
 	"io/ioutil"
 	"log"
 	"os"
@@ -17,8 +17,8 @@ import (
 )
 
 type Migration struct {
-	Scenario         types.Scenario
-	ValidationErrors types.ValidationErrors
+	Scenario         validation.Scenario
+	ValidationErrors validation.ValidationErrors
 
 	Id       uint32 `json:"id" column:"id"`
 	Version  int64  `json:"version" column:"version"`
@@ -33,16 +33,16 @@ func (Migration) GetTableName() string {
 }
 
 func (m *Migration) ValidateByScenario() {
-	validationMap := make(types.ValidationMap)
-	validationMap = types.ValidationMap{
-		constants.ScenarioCreate: types.ValidationRules{
+	validationMap := make(validation.ValidationMap)
+	validationMap = validation.ValidationMap{
+		constants.ScenarioCreate: validation.ValidationRules{
 			constants.MigrationVersionField:   "required",
 			constants.MigrationFilenameField:  "required",
 			constants.MigrationCreatedAtField: "required",
 			constants.MigrationUpdatedAtField: "required",
 		},
 	}
-	m.ValidationErrors = validateByScenario(m.Scenario, m, validationMap)
+	m.ValidationErrors = validation.ValidateByScenario(m.Scenario, m, validationMap)
 }
 
 func (m Migration) GetId() uint32 {
@@ -148,7 +148,7 @@ func apply(ctx context.Context, conn *sql.Conn, k int, list map[int64]Migration)
 		m.ValidateByScenario()
 		if len(m.ValidationErrors) > 0 {
 			log.Println(m.ValidationErrors)
-			return helpers.MergeErrors(m.ValidationErrors)
+			return m.ValidationErrors
 		}
 
 		err = performMigrateTx(ctx, conn, m)
