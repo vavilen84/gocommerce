@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"reflect"
 	"runtime"
 	"time"
 )
@@ -19,6 +20,18 @@ func LogFatal(msg string) {
 	err := errors.New(msg)
 	LogError(err)
 	os.Exit(1)
+}
+
+func DebugInterface(i interface{}) (v reflect.Value, t reflect.Type, ts string) {
+	v = reflect.ValueOf(i)
+	t = reflect.TypeOf(i)
+	ts = t.String()
+	return
+}
+
+func DebugError(err error) (msg string) {
+	msg = err.Error()
+	return
 }
 
 func LogError(err error) {

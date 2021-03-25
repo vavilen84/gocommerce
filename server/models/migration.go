@@ -17,8 +17,8 @@ import (
 )
 
 type Migration struct {
-	Scenario         validation.Scenario
-	ValidationErrors validation.ValidationErrors
+	Scenario validation.Scenario
+	Errors   validation.Errors
 
 	Id       uint32 `json:"id" column:"id"`
 	Version  int64  `json:"version" column:"version"`
@@ -33,16 +33,16 @@ func (Migration) GetTableName() string {
 }
 
 func (m *Migration) ValidateByScenario() {
-	validationMap := make(validation.ValidationMap)
-	validationMap = validation.ValidationMap{
-		constants.ScenarioCreate: validation.ValidationRules{
+	scenarioRules := make(validation.ScenarioRules)
+	scenarioRules = validation.ScenarioRules{
+		constants.ScenarioCreate: validation.FieldRules{
 			constants.MigrationVersionField:   "required",
 			constants.MigrationFilenameField:  "required",
 			constants.MigrationCreatedAtField: "required",
 			constants.MigrationUpdatedAtField: "required",
 		},
 	}
-	m.ValidationErrors = validation.ValidateByScenario(m.Scenario, m, validationMap)
+	m.Errors = validation.ValidateByScenario(m.Scenario, m, scenarioRules)
 }
 
 func (m Migration) GetId() uint32 {
@@ -146,9 +146,9 @@ func apply(ctx context.Context, conn *sql.Conn, k int, list map[int64]Migration)
 
 		m.Scenario = constants.ScenarioCreate
 		m.ValidateByScenario()
-		if len(m.ValidationErrors) > 0 {
-			log.Println(m.ValidationErrors)
-			return m.ValidationErrors
+		if len(m.Errors) > 0 {
+			log.Println(m.Errors)
+			return m.Errors
 		}
 
 		err = performMigrateTx(ctx, conn, m)

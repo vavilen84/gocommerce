@@ -3,3 +3,5 @@
 tmp/*
 !tmp/.gitignore
 server/vendor
+server/tmp
+!server/tmp/.gitignore
