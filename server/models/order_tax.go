@@ -21,7 +21,7 @@ func (m OrderTax) GetId() uint32 {
 }
 
 func (OrderTax) GetTableName() string {
-	return constants.OrderDBTable
+	return constants.OrderTaxDBTable
 }
 
 func (OrderTax) getValidationRules() validation.ScenarioRules {
