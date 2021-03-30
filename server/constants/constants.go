@@ -5,15 +5,16 @@ import "time"
 const (
 
 	// db tables
-	MigrationDBTable       = "migration"
-	ProductDBTable         = "product"
-	CustomerDBTable        = "customer"
-	OrderDBTable           = "order"
-	OrderProductDBTable    = "order_product"
-	OrderTaxDBTable        = "order_tax"
-	OrderProductTaxDBTable = "order_product_tax"
-	OrderDiscountDBTable   = "order_discount"
-	TaxDBTable             = "tax"
+	MigrationDBTable            = "migration"
+	ProductDBTable              = "product"
+	CustomerDBTable             = "customer"
+	OrderDBTable                = "order"
+	OrderProductDBTable         = "order_product"
+	OrderTaxDBTable             = "order_tax"
+	OrderProductTaxDBTable      = "order_product_tax"
+	OrderProductDiscountDBTable = "order_product_discount"
+	OrderDiscountDBTable        = "order_discount"
+	TaxDBTable                  = "tax"
 
 	// migrations
 	MigrationsFolder = "migrations"
@@ -96,7 +97,11 @@ const (
 	OrderDiscountOrderIdField    = "OrderId"
 	OrderDiscountDiscountIdField = "DiscountId"
 
-	//order_tax
+	//order_product_tax
 	OrderProductTaxOrderProductIdField = "OrderProductId"
 	OrderProductTaxTaxIdField          = "TaxId"
+
+	//order_product_discount
+	OrderProductDiscountOrderProductIdField = "OrderProductId"
+	OrderProductDiscountDiscountIdField     = "DiscountId"
 )
