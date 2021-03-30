@@ -1,6 +1,8 @@
 package validation
 
-import "gopkg.in/go-playground/validator.v9"
+import (
+	"gopkg.in/go-playground/validator.v9"
+)
 
 func Validate(model interface{}) error {
 	v := validator.New()

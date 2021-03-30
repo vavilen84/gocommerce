@@ -7,6 +7,7 @@ import (
 	"github.com/vavilen84/gocommerce/database"
 	"github.com/vavilen84/gocommerce/helpers"
 	"github.com/vavilen84/gocommerce/validation"
+	"gopkg.in/go-playground/validator.v9"
 	"io/ioutil"
 	"log"
 	"os"
@@ -17,24 +18,25 @@ import (
 )
 
 type Migration struct {
-	Scenario validation.Scenario
-	Errors   validation.Errors
-
 	Id       uint32 `json:"id" column:"id"`
 	Version  int64  `json:"version" column:"version"`
 	Filename string `json:"filename" column:"filename"`
 
 	CreatedAt int64 `json:"created_at" column:"created_at"`
 	UpdatedAt int64 `json:"updated_at" column:"updated_at"`
+	DeletedAt int64 `json:"deleted_at" column:"deleted_at"`
 }
 
 func (Migration) GetTableName() string {
-	return constants.MigrationsDBTable
+	return constants.MigrationDBTable
 }
 
-func (m *Migration) ValidateByScenario() {
-	scenarioRules := make(validation.ScenarioRules)
-	scenarioRules = validation.ScenarioRules{
+func (m Migration) GetId() uint32 {
+	return m.Id
+}
+
+func (Migration) getValidationRules() validation.ScenarioRules {
+	return validation.ScenarioRules{
 		constants.ScenarioCreate: validation.FieldRules{
 			constants.MigrationVersionField:   "required",
 			constants.MigrationFilenameField:  "required",
@@ -42,11 +44,10 @@ func (m *Migration) ValidateByScenario() {
 			constants.MigrationUpdatedAtField: "required",
 		},
 	}
-	m.Errors = validation.ValidateByScenario(m.Scenario, m, scenarioRules)
 }
 
-func (m Migration) GetId() uint32 {
-	return m.Id
+func (Migration) getValidator() *validator.Validate {
+	return validator.New()
 }
 
 func getMigration(info os.FileInfo) (err error, m Migration) {
@@ -144,11 +145,10 @@ func apply(ctx context.Context, conn *sql.Conn, k int, list map[int64]Migration)
 	err := row.Scan(&version)
 	if err == sql.ErrNoRows {
 
-		m.Scenario = constants.ScenarioCreate
-		m.ValidateByScenario()
-		if len(m.Errors) > 0 {
-			log.Println(m.Errors)
-			return m.Errors
+		validationErr := validation.ValidateByScenario(constants.ScenarioCreate, m, m.getValidator(), m.getValidationRules())
+		if validationErr != nil {
+			log.Println(validationErr)
+			return validationErr
 		}
 
 		err = performMigrateTx(ctx, conn, m)
@@ -164,7 +164,7 @@ func apply(ctx context.Context, conn *sql.Conn, k int, list map[int64]Migration)
 
 func CreateMigrationsTableIfNotExists(ctx context.Context, conn *sql.Conn) error {
 	query := `
-		CREATE TABLE IF NOT EXISTS ` + constants.MigrationsDBTable + `
+		CREATE TABLE IF NOT EXISTS ` + constants.MigrationDBTable + `
 		(
     		id INT UNSIGNED NOT NULL PRIMARY KEY,
 			version BIGINT UNSIGNED NOT NULL,

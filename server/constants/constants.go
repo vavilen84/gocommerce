@@ -5,7 +5,8 @@ import "time"
 const (
 
 	// db tables
-	MigrationsDBTable = "migrations"
+	MigrationDBTable = "migration"
+	ProductDBTable   = "product"
 
 	// migrations
 	MigrationsFolder = "migrations"
@@ -33,8 +34,15 @@ const (
 	MigrationModel = "Migration"
 
 	// field names
+
+	// migration
 	MigrationVersionField   = "Version"
 	MigrationFilenameField  = "Filename"
 	MigrationCreatedAtField = "CreatedAt"
 	MigrationUpdatedAtField = "UpdatedAt"
+
+	//product
+	ProductTitleField = "Title"
+	ProductSKUField   = "SKU"
+	ProductPriceField = "Price"
 )

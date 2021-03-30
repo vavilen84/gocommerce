@@ -3,12 +3,13 @@ package validation
 import (
 	"fmt"
 	"github.com/vavilen84/gocommerce/helpers"
+	"github.com/vavilen84/gocommerce/interfaces"
 	"gopkg.in/go-playground/validator.v9"
 )
 
-func ValidateByScenario(scenario Scenario, m interface{}, validationMap ScenarioRules) Errors {
+// should be passed ptr to modelm otherwise - func will panic
+func ValidateByScenario(scenario Scenario, m interfaces.Model, validate *validator.Validate, validationMap ScenarioRules) Errors {
 	errs := make(Errors)
-	validate := validator.New()
 	data := structToMap(m)
 	for fieldName, validation := range validationMap[scenario] {
 		field, ok := data[fieldName]

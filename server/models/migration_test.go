@@ -3,19 +3,19 @@ package models
 import (
 	"github.com/stretchr/testify/assert"
 	"github.com/vavilen84/gocommerce/constants"
+	"github.com/vavilen84/gocommerce/validation"
 	"testing"
 	"time"
 )
 
 func TestMigration_ValidateByScenario(t *testing.T) {
 	m := Migration{}
-	m.Scenario = constants.ScenarioCreate
-	m.ValidateByScenario()
-
-	assert.NotEmpty(t, m.Errors[constants.MigrationUpdatedAtField])
-	assert.NotEmpty(t, m.Errors[constants.MigrationCreatedAtField])
-	assert.NotEmpty(t, m.Errors[constants.MigrationVersionField])
-	assert.NotEmpty(t, m.Errors[constants.MigrationFilenameField])
+	err := validation.ValidateByScenario(constants.ScenarioCreate, &m, m.getValidator(), m.getValidationRules())
+	assert.NotEmpty(t, err)
+	assert.NotEmpty(t, err[constants.MigrationUpdatedAtField])
+	assert.NotEmpty(t, err[constants.MigrationCreatedAtField])
+	assert.NotEmpty(t, err[constants.MigrationVersionField])
+	assert.NotEmpty(t, err[constants.MigrationFilenameField])
 
 	m = Migration{
 		Version:   time.Now().Unix(),
@@ -23,7 +23,6 @@ func TestMigration_ValidateByScenario(t *testing.T) {
 		CreatedAt: time.Now().Unix(),
 		UpdatedAt: time.Now().Unix(),
 	}
-	m.Scenario = constants.ScenarioCreate
-	m.ValidateByScenario()
-	assert.Empty(t, m.Errors)
+	err = validation.ValidateByScenario(constants.ScenarioCreate, &m, m.getValidator(), m.getValidationRules())
+	assert.Empty(t, err)
 }
