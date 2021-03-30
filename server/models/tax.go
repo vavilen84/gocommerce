@@ -15,6 +15,7 @@ type Tax struct {
 	Title      string `json:"title" column:"title"`
 	Amount     uint32 `json:"amount" column:"amount"`
 	Percentage uint8  `json:"percentage" column:"percentage"`
+	Type       uint8  `json:"type" column:"type"`
 
 	CreatedAt int64 `json:"created_at" column:"created_at"`
 	UpdatedAt int64 `json:"updated_at" column:"updated_at"`
@@ -35,6 +36,7 @@ func (Tax) getValidationRules() validation.ScenarioRules {
 			constants.TaxTitleField:      "required",
 			constants.TaxAmountField:     "min=1",
 			constants.TaxPercentageField: "min=1,max=100",
+			constants.TaxTypeField:       "required",
 		},
 	}
 }

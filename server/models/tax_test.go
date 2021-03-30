@@ -14,10 +14,12 @@ func TestTax_ValidateOnCreate(t *testing.T) {
 	assert.NotEmpty(t, err[constants.TaxTitleField])
 	assert.NotEmpty(t, err[constants.TaxAmountField])
 	assert.NotEmpty(t, err[constants.TaxPercentageField])
+	assert.NotEmpty(t, err[constants.TaxTypeField])
 
 	m = Tax{
 		Title:  "product",
 		Amount: 1,
+		Type:   constants.TaxCartType,
 	}
 	err = validation.ValidateByScenario(constants.ScenarioCreate, &m, m.getValidator(), m.getValidationRules())
 	assert.NotNil(t, err)
@@ -25,6 +27,7 @@ func TestTax_ValidateOnCreate(t *testing.T) {
 	m = Tax{
 		Title:      "product",
 		Percentage: 1,
+		Type:       constants.TaxCategoryType,
 	}
 	err = validation.ValidateByScenario(constants.ScenarioCreate, &m, m.getValidator(), m.getValidationRules())
 	assert.NotNil(t, err)

@@ -15,6 +15,7 @@ type Discount struct {
 	Title      string `json:"title" column:"title"`
 	Amount     uint32 `json:"amount" column:"amount"`
 	Percentage uint8  `json:"percentage" column:"percentage"`
+	Type       uint8  `json:"type" column:"type"`
 
 	CreatedAt int64 `json:"created_at" column:"created_at"`
 	UpdatedAt int64 `json:"updated_at" column:"updated_at"`
@@ -35,6 +36,7 @@ func (Discount) getValidationRules() validation.ScenarioRules {
 			constants.DiscountTitleField:      "required",
 			constants.DiscountAmountField:     "min=1",
 			constants.DiscountPercentageField: "min=1,max=100",
+			constants.DiscountTypeField:       "required",
 		},
 	}
 }

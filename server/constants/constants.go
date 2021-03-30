@@ -59,11 +59,23 @@ const (
 	TaxTitleField      = "Title"
 	TaxAmountField     = "Amount"
 	TaxPercentageField = "Percentage"
+	TaxTypeField       = "Type"
+
+	//tax types
+	TaxCartType     = 1
+	TaxCategoryType = 2
+	TaxProductType  = 3
 
 	//discount
 	DiscountTitleField      = "Title"
 	DiscountAmountField     = "Amount"
 	DiscountPercentageField = "Percentage"
+	DiscountTypeField       = "Type"
+
+	//discount types
+	DiscountCartType     = 1
+	DiscountCategoryType = 2
+	DiscountProductType  = 3
 
 	//order
 	OrderCustomerIdField = "CustomerId"
