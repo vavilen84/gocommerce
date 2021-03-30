@@ -35,7 +35,7 @@ func (Product) GetTableName() string {
 func (Product) getValidationRules() validation.ScenarioRules {
 	return validation.ScenarioRules{
 		constants.ScenarioCreate: validation.FieldRules{
-			constants.ProductTitleField: "required,min=1, max=255",
+			constants.ProductTitleField: "required,min=1,max=255",
 			constants.ProductSKUField:   "required,min=1,max=255,sku",
 			constants.ProductPriceField: "required,min=0,max=999999999999",
 		},
@@ -45,7 +45,9 @@ func (Product) getValidationRules() validation.ScenarioRules {
 func (Product) getValidator() (v *validator.Validate) {
 	v = validator.New()
 	err := v.RegisterValidation("sku", ValidateSKU)
-	helpers.LogError(err)
+	if err != nil {
+		helpers.LogError(err)
+	}
 	return
 }
 

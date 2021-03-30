@@ -11,4 +11,15 @@ func TestProduct_ValidateOnCreate(t *testing.T) {
 	m := Product{}
 	err := validation.ValidateByScenario(constants.ScenarioCreate, &m, m.getValidator(), m.getValidationRules())
 	assert.NotNil(t, err)
+	assert.NotEmpty(t, err[constants.ProductPriceField])
+	assert.NotEmpty(t, err[constants.ProductSKUField])
+	assert.NotEmpty(t, err[constants.ProductTitleField])
+
+	m = Product{
+		Title: "product",
+		SKU:   "sku-123_123",
+		Price: 100,
+	}
+	err = validation.ValidateByScenario(constants.ScenarioCreate, &m, m.getValidator(), m.getValidationRules())
+	assert.NotNil(t, err)
 }

@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func TestMigration_ValidateByScenario(t *testing.T) {
+func TestMigration_ValidateOnCreate(t *testing.T) {
 	m := Migration{}
 	err := validation.ValidateByScenario(constants.ScenarioCreate, &m, m.getValidator(), m.getValidationRules())
 	assert.NotEmpty(t, err)
