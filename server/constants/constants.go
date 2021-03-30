@@ -60,6 +60,11 @@ const (
 	TaxAmountField     = "Amount"
 	TaxPercentageField = "Percentage"
 
+	//discount
+	DiscountTitleField      = "Title"
+	DiscountAmountField     = "Amount"
+	DiscountPercentageField = "Percentage"
+
 	//order
 	OrderCustomerIdField = "CustomerId"
 
