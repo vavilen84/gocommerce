@@ -10,6 +10,7 @@ const (
 	CustomerDBTable     = "customer"
 	OrderDBTable        = "order"
 	OrderProductDBTable = "order_product"
+	TaxDBTable          = "tax"
 
 	// migrations
 	MigrationsFolder = "migrations"
@@ -53,6 +54,11 @@ const (
 	CustomerFirstNameField = "FirstName"
 	CustomerLastNameField  = "LastName"
 	CustomerEmailField     = "Email"
+
+	//tax
+	TaxTitleField      = "Title"
+	TaxAmountField     = "Amount"
+	TaxPercentageField = "Percentage"
 
 	//order
 	OrderCustomerIdField = "CustomerId"
