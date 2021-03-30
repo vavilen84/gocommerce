@@ -5,10 +5,11 @@ import "time"
 const (
 
 	// db tables
-	MigrationDBTable = "migration"
-	ProductDBTable   = "product"
-	CustomerDBTable  = "customer"
-	OrderDBTable     = "order"
+	MigrationDBTable    = "migration"
+	ProductDBTable      = "product"
+	CustomerDBTable     = "customer"
+	OrderDBTable        = "order"
+	OrderProductDBTable = "order_product"
 
 	// migrations
 	MigrationsFolder = "migrations"
@@ -55,4 +56,9 @@ const (
 
 	//order
 	OrderCustomerIdField = "CustomerId"
+
+	//order_product
+	OrderOrderIdField   = "OrderId"
+	OrderProductIdField = "ProductId"
+	OrderQuantityField  = "Quantity"
 )
