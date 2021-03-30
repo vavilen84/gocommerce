@@ -23,8 +23,6 @@ type Migration struct {
 	Filename string `json:"filename" column:"filename"`
 
 	CreatedAt int64 `json:"created_at" column:"created_at"`
-	UpdatedAt int64 `json:"updated_at" column:"updated_at"`
-	DeletedAt int64 `json:"deleted_at" column:"deleted_at"`
 }
 
 func (Migration) GetTableName() string {
@@ -41,7 +39,6 @@ func (Migration) getValidationRules() validation.ScenarioRules {
 			constants.MigrationVersionField:   "required",
 			constants.MigrationFilenameField:  "required",
 			constants.MigrationCreatedAtField: "required",
-			constants.MigrationUpdatedAtField: "required",
 		},
 	}
 }
