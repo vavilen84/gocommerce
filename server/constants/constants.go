@@ -7,6 +7,8 @@ const (
 	// db tables
 	MigrationDBTable = "migration"
 	ProductDBTable   = "product"
+	CustomerDBTable  = "customer"
+	OrderDBTable     = "order"
 
 	// migrations
 	MigrationsFolder = "migrations"
@@ -45,4 +47,12 @@ const (
 	ProductTitleField = "Title"
 	ProductSKUField   = "SKU"
 	ProductPriceField = "Price"
+
+	//customer
+	CustomerFirstNameField = "FirstName"
+	CustomerLastNameField  = "LastName"
+	CustomerEmailField     = "Email"
+
+	//order
+	OrderCustomerIdField = "CustomerId"
 )
