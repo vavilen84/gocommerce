@@ -10,6 +10,7 @@ const (
 	CustomerDBTable     = "customer"
 	OrderDBTable        = "order"
 	OrderProductDBTable = "order_product"
+	OrderTaxDBTable     = "order_tax"
 	TaxDBTable          = "tax"
 
 	// migrations
@@ -84,4 +85,8 @@ const (
 	OrderOrderIdField   = "OrderId"
 	OrderProductIdField = "ProductId"
 	OrderQuantityField  = "Quantity"
+
+	//order_tax
+	OrderTaxOrderIdField = "OrderId"
+	OrderTaxTaxIdField   = "TaxId"
 )
