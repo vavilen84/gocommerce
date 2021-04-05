@@ -5,3 +5,5 @@ tmp/*
 server/vendor
 server/tmp
 !server/tmp/.gitignore
+docker/dev/db/dbdata
+!docker/dev/db/dbdata/.gitignore
