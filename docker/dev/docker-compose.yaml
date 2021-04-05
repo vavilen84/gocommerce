@@ -38,6 +38,9 @@ services:
   db:
     image: mysql
     command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ${APP_ROOT}/docker/dev/db/dbdata:/var/lib/mysql
+      - ${APP_ROOT}/docker/dev/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     restart: always
     container_name: db
     expose:

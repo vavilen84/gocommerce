@@ -6,4 +6,4 @@ ENV GO111MODULE=on
 ENV GOPATH=''
 COPY ./server/ ./
 
-CMD go mod vendor && go mod tidy && go run .
+CMD go mod tidy && go run .
