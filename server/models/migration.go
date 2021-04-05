@@ -33,7 +33,7 @@ func (m Migration) GetId() uint32 {
 	return m.Id
 }
 
-func (Migration) getValidationRules() validation.ScenarioRules {
+func (Migration) GetValidationRules() interface{} {
 	return validation.ScenarioRules{
 		constants.ScenarioCreate: validation.FieldRules{
 			constants.MigrationVersionField:   "required",
@@ -43,7 +43,7 @@ func (Migration) getValidationRules() validation.ScenarioRules {
 	}
 }
 
-func (Migration) getValidator() *validator.Validate {
+func (Migration) GetValidator() interface{} {
 	return validator.New()
 }
 
@@ -142,7 +142,7 @@ func apply(ctx context.Context, conn *sql.Conn, k int, list map[int64]Migration)
 	err := row.Scan(&version)
 	if err == sql.ErrNoRows {
 
-		validationErr := validation.ValidateByScenario(constants.ScenarioCreate, m, m.getValidator(), m.getValidationRules())
+		validationErr := validation.ValidateByScenario(constants.ScenarioCreate, m)
 		if validationErr != nil {
 			log.Println(validationErr)
 			return validationErr
@@ -163,7 +163,7 @@ func CreateMigrationsTableIfNotExists(ctx context.Context, conn *sql.Conn) error
 	query := `
 		CREATE TABLE IF NOT EXISTS ` + constants.MigrationDBTable + `
 		(
-    		id INT UNSIGNED NOT NULL PRIMARY KEY,
+   		id INT UNSIGNED NOT NULL PRIMARY KEY,
 			version BIGINT UNSIGNED NOT NULL,
 			filename varchar(255) NOT NULL,
 			created_at BIGINT UNSIGNED NOT NULL,

@@ -5,7 +5,7 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 )
 
-type Errors map[Field][]FieldError
+type Errors map[string][]FieldError
 
 func (s Errors) Error() (result string) {
 	for _, errs := range s {
@@ -18,7 +18,7 @@ func (s Errors) Error() (result string) {
 
 func (s Errors) setStructValidationErrors(err error, model interface{}) {
 	for _, e := range err.(validator.ValidationErrors) {
-		field := Field(e.Field())
+		field := e.Field()
 		if _, ok := s[field]; !ok {
 			s[field] = make([]FieldError, 0)
 		}

@@ -7,10 +7,12 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 )
 
-// should be passed ptr to modelm otherwise - func will panic
-func ValidateByScenario(scenario Scenario, m interfaces.Model, validate *validator.Validate, validationMap ScenarioRules) Errors {
+// should be passed ptr to model m otherwise - func will panic
+func ValidateByScenario(scenario Scenario, m interfaces.Model) Errors {
+	validate := m.GetValidator().(*validator.Validate)
+	validationMap := m.GetValidationRules().(ScenarioRules)
 	errs := make(Errors)
-	data := structToMap(m)
+	data := helpers.StructToMap(m)
 	for fieldName, validation := range validationMap[scenario] {
 		field, ok := data[fieldName]
 		if !ok {

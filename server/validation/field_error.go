@@ -7,7 +7,7 @@ import (
 
 type FieldError struct {
 	Tag     string
-	Field   Field
+	Field   string
 	Message string
 	Value   string
 	Param   string

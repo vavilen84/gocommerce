@@ -4,10 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/vavilen84/gocommerce/constants"
 	"github.com/vavilen84/gocommerce/helpers"
 	"github.com/vavilen84/gocommerce/interfaces"
+	"github.com/vavilen84/gocommerce/validation"
+	"log"
 	"reflect"
 	"strings"
+	"time"
 )
 
 func TxInsert(ctx context.Context, tx *sql.Tx, v interfaces.Model) error {
@@ -57,6 +61,39 @@ func TxInsert(ctx context.Context, tx *sql.Tx, v interfaces.Model) error {
 		return err
 	}
 	return nil
+}
+
+func Create(ctx context.Context, conn *sql.Conn, m interfaces.Model) (err error) {
+	err = validation.ValidateByScenario(constants.ScenarioCreate, m)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	setTimestamps(constants.ScenarioCreate, m)
+	err = Insert(ctx, conn, m)
+	return
+}
+
+func setTimestamps(scenario string, m interfaces.Model) {
+
+	elem := reflect.ValueOf(m).Elem()
+	data := helpers.StructToMap(m)
+
+	switch scenario {
+	case constants.ScenarioCreate:
+		setTimestamp(elem, data, constants.CommonCreatedAtField)
+		setTimestamp(elem, data, constants.CommonUpdatedAtField)
+	case constants.ScenarioUpdate:
+		setTimestamp(elem, data, constants.CommonUpdatedAtField)
+	case constants.ScenarioDelete:
+		setTimestamp(elem, data, constants.CommonDeletedAtField)
+	}
+}
+
+func setTimestamp(elem reflect.Value, data map[string]interface{}, field string) {
+	if _, ok := data[field]; ok {
+		elem.FieldByName(field).SetInt(time.Now().Unix())
+	}
 }
 
 func Insert(ctx context.Context, conn *sql.Conn, v interfaces.Model) error {

@@ -22,6 +22,7 @@ const (
 	// scenarios
 	ScenarioCreate = "create"
 	ScenarioUpdate = "update"
+	ScenarioDelete = "delete"
 
 	// validation tags
 	RequiredTag = "required"
@@ -104,4 +105,9 @@ const (
 	//order_product_discount
 	OrderProductDiscountOrderProductIdField = "OrderProductId"
 	OrderProductDiscountDiscountIdField     = "DiscountId"
+
+	// common
+	CommonCreatedAtField = "CreatedAt"
+	CommonUpdatedAtField = "UpdatedAt"
+	CommonDeletedAtField = "DeletedAt"
 )

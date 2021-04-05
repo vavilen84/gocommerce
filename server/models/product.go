@@ -32,7 +32,7 @@ func (Product) GetTableName() string {
 	return constants.ProductDBTable
 }
 
-func (Product) getValidationRules() validation.ScenarioRules {
+func (Product) GetValidationRules() interface{} {
 	return validation.ScenarioRules{
 		constants.ScenarioCreate: validation.FieldRules{
 			constants.ProductTitleField: "required,min=1,max=255",
@@ -42,13 +42,13 @@ func (Product) getValidationRules() validation.ScenarioRules {
 	}
 }
 
-func (Product) getValidator() (v *validator.Validate) {
-	v = validator.New()
+func (Product) GetValidator() interface{} {
+	v := validator.New()
 	err := v.RegisterValidation("sku", ValidateSKU)
 	if err != nil {
 		helpers.LogError(err)
 	}
-	return
+	return v
 }
 
 func ValidateSKU(fl validator.FieldLevel) (r bool) {
@@ -61,11 +61,9 @@ func ValidateSKU(fl validator.FieldLevel) (r bool) {
 }
 
 func (m Product) Create(ctx context.Context, conn *sql.Conn) (err error) {
-	err = validation.ValidateByScenario(constants.ScenarioCreate, m, m.getValidator(), m.getValidationRules())
+	err = database.Create(ctx, conn, m)
 	if err != nil {
 		log.Println(err)
-		return
 	}
-	err = database.Insert(ctx, conn, m)
 	return
 }
