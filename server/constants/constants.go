@@ -37,6 +37,8 @@ const (
 	EmailErrorMsg    = "%s resource: email is not valid"
 
 	// Server
+	DefaultWriteTimout  = 60 * time.Second
+	DefaultReadTimeout  = 60 * time.Second
 	DefaultStoreTimeout = 60 * time.Second
 
 	// model names
