@@ -4,6 +4,30 @@ import "time"
 
 const (
 
+	//common
+	SqlDsnFormat = `%s:%s@tcp(%s:%d)/%s`
+
+	// env vars
+	MysqlUserEnvVar     = "MYSQL_USER"
+	MysqlDBEnvVar       = "MYSQL_DATABASE"
+	MysqlPasswordEnvVar = "MYSQL_PASSWORD"
+
+	MysqlTestUserEnvVar         = "MYSQL_TEST_USER"
+	MysqlTestUserPasswordEnvVar = "MYSQL_TEST_USER_PASSWORD"
+	MysqlTestDBEnvVar           = "MYSQL_TEST_DATABASE"
+
+	SqlDriverEnvVar          = "SQL_DRIVER"
+	MysqlPortEnvVar          = "MYSQL_PORT"
+	MysqlHostEnvVar          = "MYSQL_HOST"
+	DockerMysqlServiceEnvVar = "DOCKER_MYSQL_SERVICE"
+
+	// app env
+	AppEnvEnvVar = "APP_ENV"
+
+	DevelopmentAppEnv = "development"
+	ProductionAppEnv  = "production"
+	TestingAppEnv     = "testing"
+
 	// db tables
 	MigrationDBTable            = "migration"
 	ProductDBTable              = "product"

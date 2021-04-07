@@ -3,7 +3,8 @@ package store
 import (
 	"context"
 	"database/sql"
-	"github.com/joho/godotenv"
+	"fmt"
+	"github.com/vavilen84/gocommerce/constants"
 	"github.com/vavilen84/gocommerce/helpers"
 	"os"
 )
@@ -17,8 +18,8 @@ func InitDB() {
 }
 
 func GetNewDBConn() (conn *sql.Conn, ctx context.Context) {
-	// for endpoints testing, see main_test.go
-	if os.Getenv("APP_ENV") == "test" {
+	// for endpoints testing. usage: os.Setenv(constants.AppEnvEnvVar, constants.TestingAppEnv)
+	if os.Getenv(constants.AppEnvEnvVar) == constants.TestingAppEnv {
 		return GetNewTestDBConn()
 	}
 	ctx = GetDefaultDBContext()
@@ -29,39 +30,23 @@ func GetNewDBConn() (conn *sql.Conn, ctx context.Context) {
 	return
 }
 
-func initDBForLocalhostAppRun() *sql.DB {
-	err := godotenv.Load("../.env")
-	if err != nil {
-		helpers.LogError(err)
-	}
-	sqlServerDsn := os.Getenv("LOCALHOST_SQL_DSN")
-	mysqlDbName := os.Getenv("MYSQL_DATABASE")
-	DbDsn := os.Getenv("LOCALHOST_DB_SQL_DSN")
-	return processInitDb(sqlServerDsn, mysqlDbName, DbDsn)
-}
-
-func initDBForDockerMySql() *sql.DB {
-	sqlServerDsn := os.Getenv("SQL_DSN")
-	mysqlDbName := os.Getenv("MYSQL_DATABASE")
-	DbDsn := os.Getenv("DB_SQL_DSN")
-	return processInitDb(sqlServerDsn, mysqlDbName, DbDsn)
-}
-
-func initDBForHostMachineMySql() *sql.DB {
-	sqlServerDsn := setHostAddress(os.Getenv("HOST_MACHINE_SQL_DSN"))
-	mysqlDbName := setHostAddress(os.Getenv("MYSQL_DATABASE"))
-	DbDsn := setHostAddress(os.Getenv("HOST_MACHINE_DB_SQL_DSN"))
-	return processInitDb(sqlServerDsn, mysqlDbName, DbDsn)
-}
-
 func initDb() *sql.DB {
-	docker := os.Getenv("DOCKER")
-	if docker != "true" {
-		return initDBForLocalhostAppRun()
-	}
-	dockerMySqlOnHostMachine := os.Getenv("DOCKER_MYSQL_HOST_MACHINE")
-	if dockerMySqlOnHostMachine != "true" {
-		return initDBForDockerMySql()
-	}
-	return initDBForHostMachineMySql()
+	sqlServerDsn := fmt.Sprintf(
+		constants.SqlDsnFormat,
+		os.Getenv(constants.MysqlUserEnvVar),
+		os.Getenv(constants.MysqlPasswordEnvVar),
+		os.Getenv(constants.DockerMysqlServiceEnvVar),
+		os.Getenv(constants.MysqlPortEnvVar),
+		"",
+	)
+	mysqlDbName := os.Getenv(constants.MysqlDBEnvVar)
+	DbDsn := fmt.Sprintf(
+		constants.SqlDsnFormat,
+		os.Getenv(constants.MysqlUserEnvVar),
+		os.Getenv(constants.MysqlPasswordEnvVar),
+		os.Getenv(constants.DockerMysqlServiceEnvVar),
+		os.Getenv(constants.MysqlPortEnvVar),
+		os.Getenv(constants.MysqlDBEnvVar),
+	)
+	return processInitDb(sqlServerDsn, mysqlDbName, DbDsn)
 }

@@ -7,8 +7,6 @@ import (
 	"github.com/vavilen84/gocommerce/helpers"
 	"log"
 	"os"
-	"os/exec"
-	"strings"
 	"time"
 )
 
@@ -28,7 +26,7 @@ func GetDefaultDBContext() context.Context {
 }
 
 func processInitDb(sqlServerDsn, mysqlDbName, DbDsn string) (db *sql.DB) {
-	sqlDriver := os.Getenv("SQL_DRIVER")
+	sqlDriver := os.Getenv(constants.SqlDriverEnvVar)
 	// use credentials without db in order to create db
 	db, err := sql.Open(sqlDriver, sqlServerDsn)
 	if err != nil {
@@ -52,14 +50,4 @@ func processInitDb(sqlServerDsn, mysqlDbName, DbDsn string) (db *sql.DB) {
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(10)
 	return db
-}
-
-func setHostAddress(input string) string {
-	output, err := exec.Command(os.Getenv("PROJECT_ROOT") + "/shell/get_host_machine_ip.sh").Output()
-	if err != nil {
-		helpers.LogError(err)
-	}
-	addr := strings.TrimSpace(string(output))
-	placeholder := "HOST_MACHINE_ADDRESS"
-	return strings.Replace(input, placeholder, addr, -1)
 }
