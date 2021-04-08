@@ -3,8 +3,20 @@ version: '3.8'
 services:
 
   server:
-    env_file:
-      - ".env.development"
+    build:
+      context: ${APP_ROOT}
+      dockerfile: docker/server/Dockerfile
+      args:
+        WORKDIR: ${PROJECT_ROOT}
+    networks:
+      - local
+    container_name: server
+#    depends_on:
+#      - db
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
 
 #  pma:
 #    container_name: pma
