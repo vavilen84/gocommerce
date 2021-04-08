@@ -1,9 +1,9 @@
 .idea
-.env
+docker/.env.development
 tmp/*
 !tmp/.gitignore
 server/vendor
 server/tmp
 !server/tmp/.gitignore
-docker/dev/db/dbdata
-!docker/dev/db/dbdata/.gitignore
+docker/db/dbdata
+!docker/db/dbdata/.gitignore
