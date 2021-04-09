@@ -33,17 +33,9 @@ services:
 
   db:
     image: mysql
-#    build:
-#      context: ${APP_ROOT}
-#      args:
-#        WORKDIR: ${APP_ROOT}/docker/dev/db
-#        TEST_DB: ${MYSQL_TEST_DATABASE}
-#        TEST_USER: ${MYSQL_TEST_USER}
-#        TEST_USER_PASS: ${MYSQL_TEST_USER_PASSWORD}
-#        MYSQL_HOST: ${MYSQL_HOST}
     command: --default-authentication-plugin=mysql_native_password
     restart: always
-    container_name: db
+    container_name: db-migrate
     expose:
       - "3306"
     networks:
