@@ -12,8 +12,8 @@ services:
     env_file:
       - ".env.development"
     volumes:
-      - ${APP_ROOT}/docker/db-migrate/dbdata:/var/lib/mysql
-      - ${APP_ROOT}/docker/db-migrate/docker-entrypoint-initdb.d/test-db-migrate.sql:/docker-entrypoint-initdb.d/test-db-migrate.sql
+      - ${APP_ROOT}/docker/db/dbdata:/var/lib/mysql
+      - ${APP_ROOT}/docker/db/docker-entrypoint-initdb.d/test-db.sql:/docker-entrypoint-initdb.d/test-db.sql
 
 networks:
   local:
