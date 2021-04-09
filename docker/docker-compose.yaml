@@ -12,49 +12,47 @@ services:
     volumes:
       - ${PROJECT_ROOT}:${PROJECT_ROOT}
     container_name: server
-#    depends_on:
-#      - db
+    depends_on:
+      - db
     expose:
       - "8080"
     ports:
       - "8080:8080"
 
-#  pma:
-#    container_name: pma
-#    image: phpmyadmin/phpmyadmin
-#    ports:
-#      - "8081:8081"
-#    environment:
-#      - PMA_ARBITRARY=1
-#    depends_on:
-#      - db
-#    networks:
-#      - local
-#
-#  db:
+  pma:
+    container_name: pma
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8081:8081"
+    environment:
+      - PMA_ARBITRARY=1
+    depends_on:
+      - db
+    networks:
+      - local
+
+  db:
+    image: mysql
 #    build:
-#      context: ../../
-#      dockerfile: docker/dev/db/Dockerfile.development
+#      context: ${APP_ROOT}
 #      args:
 #        WORKDIR: ${APP_ROOT}/docker/dev/db
 #        TEST_DB: ${MYSQL_TEST_DATABASE}
 #        TEST_USER: ${MYSQL_TEST_USER}
 #        TEST_USER_PASS: ${MYSQL_TEST_USER_PASSWORD}
 #        MYSQL_HOST: ${MYSQL_HOST}
-#    command: --default-authentication-plugin=mysql_native_password
-#    volumes:
-#      - ${APP_ROOT}/docker/dev/db/dbdata:/var/lib/mysql
-#    restart: always
-#    container_name: db
-#    expose:
-#      - "3306"
-#    networks:
-#      - local
-#    environment:
-#      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-#      MYSQL_USER: ${MYSQL_USER}
-#      MYSQL_DATABASE: ${MYSQL_DATABASE}
-#      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    container_name: db
+    expose:
+      - "3306"
+    networks:
+      - local
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
 networks:
   local:
