@@ -3,9 +3,9 @@ package models
 //
 //import (
 //	"context"
-//	"database/sql"
+//	"orm/sql"
 //	"github.com/vavilen84/gocommerce/constants"
-//	"github.com/vavilen84/gocommerce/database"
+//	"github.com/vavilen84/gocommerce/orm"
 //	"github.com/vavilen84/gocommerce/validation"
 //	"gopkg.in/go-playground/validator.v9"
 //	"log"
@@ -47,6 +47,6 @@ package models
 //		log.Println(err)
 //		return
 //	}
-//	err = database.Insert(ctx, conn, m)
+//	err = orm.Insert(ctx, conn, m)
 //	return
 //}

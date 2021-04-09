@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"github.com/vavilen84/gocommerce/constants"
-	"github.com/vavilen84/gocommerce/database"
 	"github.com/vavilen84/gocommerce/helpers"
+	"github.com/vavilen84/gocommerce/orm"
 	"github.com/vavilen84/gocommerce/validation"
 	"gopkg.in/go-playground/validator.v9"
 	"io/ioutil"
@@ -31,6 +31,10 @@ func (Migration) GetTableName() string {
 
 func (m Migration) GetId() uint32 {
 	return m.Id
+}
+
+func (m *Migration) SetId(id uint32) {
+	m.Id = id
 }
 
 func (Migration) GetValidationRules() interface{} {
@@ -109,7 +113,7 @@ func performMigrateTx(ctx context.Context, conn *sql.Conn, m Migration) error {
 		return beginTxErr
 	}
 
-	execErr := database.TxInsert(ctx, tx, &m)
+	execErr := orm.TxInsert(ctx, tx, &m)
 	if execErr != nil {
 		_ = tx.Rollback()
 		log.Fatal(execErr)
@@ -142,7 +146,7 @@ func apply(ctx context.Context, conn *sql.Conn, k int, list map[int64]Migration)
 	err := row.Scan(&version)
 	if err == sql.ErrNoRows {
 
-		validationErr := validation.ValidateByScenario(constants.ScenarioCreate, m)
+		validationErr := validation.ValidateByScenario(constants.ScenarioCreate, &m)
 		if validationErr != nil {
 			log.Println(validationErr)
 			return validationErr

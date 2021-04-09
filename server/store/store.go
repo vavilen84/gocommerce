@@ -44,7 +44,7 @@ func processInitDb(sqlServerDsn, mysqlDbName, DbDsn string) (db *sql.DB) {
 	}
 	db, err = sql.Open(sqlDriver, DbDsn)
 	if err != nil {
-		panic("failed to database: " + err.Error())
+		panic("failed to orm: " + err.Error())
 	}
 	db.SetConnMaxLifetime(time.Minute * 3)
 	db.SetMaxOpenConns(10)

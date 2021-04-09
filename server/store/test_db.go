@@ -30,8 +30,8 @@ func GetNewTestDBConn() (conn *sql.Conn, ctx context.Context) {
 func initTestDb() *sql.DB {
 	sqlServerDsn := fmt.Sprintf(
 		constants.SqlDsnFormat,
-		os.Getenv(constants.MysqlTestUserEnvVar),
-		os.Getenv(constants.MysqlTestUserPasswordEnvVar),
+		os.Getenv(constants.MysqlUserEnvVar),
+		os.Getenv(constants.MysqlPasswordEnvVar),
 		os.Getenv(constants.DockerMysqlServiceEnvVar),
 		os.Getenv(constants.MysqlPortEnvVar),
 		"",
@@ -39,8 +39,8 @@ func initTestDb() *sql.DB {
 	mysqlDbName := os.Getenv(constants.MysqlDBEnvVar)
 	DbDsn := fmt.Sprintf(
 		constants.SqlDsnFormat,
-		os.Getenv(constants.MysqlTestUserEnvVar),
-		os.Getenv(constants.MysqlTestUserPasswordEnvVar),
+		os.Getenv(constants.MysqlUserEnvVar),
+		os.Getenv(constants.MysqlPasswordEnvVar),
 		os.Getenv(constants.DockerMysqlServiceEnvVar),
 		os.Getenv(constants.MysqlPortEnvVar),
 		os.Getenv(constants.MysqlTestDBEnvVar),

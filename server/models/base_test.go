@@ -4,12 +4,21 @@ import (
 	"context"
 	"database/sql"
 	"github.com/vavilen84/gocommerce/constants"
+	"github.com/vavilen84/gocommerce/helpers"
 	"github.com/vavilen84/gocommerce/store"
 	"log"
+	"os"
 )
 
 func init() {
 	store.InitTestDB()
+}
+
+func setTestAppEnv() {
+	err := os.Setenv(constants.AppEnvEnvVar, constants.TestingAppEnv)
+	if err != nil {
+		helpers.LogError(err)
+	}
 }
 
 /**

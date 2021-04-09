@@ -6,6 +6,7 @@ const (
 
 	//common
 	SqlDsnFormat = `%s:%s@tcp(%s:%s)/%s`
+	TestingDB    = "testing" // reference docker/db/docker-entrypoint-initdb.d/test.db-sql
 
 	// env vars
 	MysqlUserEnvVar     = "MYSQL_USER"

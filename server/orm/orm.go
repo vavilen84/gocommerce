@@ -1,4 +1,4 @@
-package database
+package orm
 
 import (
 	"context"
@@ -137,11 +137,17 @@ func Insert(ctx context.Context, conn *sql.Conn, v interfaces.Model) error {
 		strings.Join(placeholders, ","),
 	)
 
-	_, err := conn.ExecContext(ctx, query, values...)
+	res, err := conn.ExecContext(ctx, query, values...)
 	if err != nil {
 		helpers.LogError(err)
 		return err
 	}
+	id, err := res.LastInsertId()
+	if err != nil {
+		helpers.LogError(err)
+		return err
+	}
+	v.SetId(uint32(id))
 	return nil
 }
 
@@ -198,5 +204,11 @@ func Update(ctx context.Context, conn *sql.Conn, v interfaces.Model) error {
 
 func DeleteById(ctx context.Context, conn *sql.Conn, v interfaces.Model) error {
 	_, err := conn.ExecContext(ctx, `DELETE FROM `+v.GetTableName()+` WHERE id = ?`, v.GetId())
+	return err
+}
+
+func FindById(ctx context.Context, conn *sql.Conn, v interfaces.Model) (err error) {
+	row := conn.QueryRowContext(ctx, `SELECT * FROM `+v.GetTableName()+` WHERE id = ?`, v.GetId())
+	err = row.Scan(v)
 	return err
 }

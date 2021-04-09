@@ -26,22 +26,25 @@ func TestProduct_ValidateOnCreate(t *testing.T) {
 }
 
 func TestProduct_Create(t *testing.T) {
+
+	setTestAppEnv()
+	store.InitTestDB()
 	conn, ctx := store.GetNewTestDBConn()
 	defer conn.Close()
 	prepareTestDB(ctx, conn)
 
-	c := Product{
+	model := Product{
 		Title: "title",
 		SKU:   "sku",
 		Price: 1,
 	}
-	err := c.Create(ctx, conn)
+	err := model.Create(ctx, conn)
 	assert.Nil(t, err)
 
-	//c = Product{}
-	//err = c.FindById(ctx, conn, id)
-	//assert.Nil(t, err)
-	//assert.Equal(t, c.Id, id)
-	//assert.Equal(t, c.Name, name)
-	//assert.Equal(t, c.Capacity, &capacity)
+	modelFromDb, err := FindProductById(ctx, conn, model.GetId())
+	assert.Nil(t, err)
+	assert.Equal(t, model.Id, modelFromDb.Id)
+	assert.Equal(t, model.Title, modelFromDb.Title)
+	assert.Equal(t, model.SKU, modelFromDb.SKU)
+	assert.Equal(t, model.Price, modelFromDb.Price)
 }
