@@ -5,7 +5,7 @@ import "time"
 const (
 
 	//common
-	SqlDsnFormat = `%s:%s@tcp(%s:%d)/%s`
+	SqlDsnFormat = `%s:%s@tcp(%s:%s)/%s`
 
 	// env vars
 	MysqlUserEnvVar     = "MYSQL_USER"
