@@ -6,16 +6,18 @@ const (
 
 	//common
 	SqlDsnFormat = `%s:%s@tcp(%s:%s)/%s`
-	TestingDB    = "testing" // reference docker/db/docker-entrypoint-initdb.d/test.db-sql
+
+	// DEPRECATED! use default db & user for testing purposes
+	// test db & test user
+	TestingDB                   = "testing" // reference docker/db/docker-entrypoint-initdb.d/test.db-sql
+	MysqlTestUserEnvVar         = "MYSQL_TEST_USER"
+	MysqlTestUserPasswordEnvVar = "MYSQL_TEST_USER_PASSWORD"
+	MysqlTestDBEnvVar           = "MYSQL_TEST_DATABASE"
 
 	// env vars
 	MysqlUserEnvVar     = "MYSQL_USER"
 	MysqlDBEnvVar       = "MYSQL_DATABASE"
 	MysqlPasswordEnvVar = "MYSQL_PASSWORD"
-
-	MysqlTestUserEnvVar         = "MYSQL_TEST_USER"
-	MysqlTestUserPasswordEnvVar = "MYSQL_TEST_USER_PASSWORD"
-	MysqlTestDBEnvVar           = "MYSQL_TEST_DATABASE"
 
 	SqlDriverEnvVar          = "SQL_DRIVER"
 	MysqlPortEnvVar          = "MYSQL_PORT"

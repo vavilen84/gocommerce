@@ -3,8 +3,15 @@ version: '3.8'
 services:
 
   server:
+    ports:
+      - "40000:40000"
     build:
-      dockerfile: docker/server/Dockerfile.development
+      dockerfile: docker/server/development/Dockerfile
+    security_opt:
+      - "seccomp:unconfined"
+    cap_add:
+      - SYS_PTRACE
+    command: bash -c "go mod tidy && go build -o server && dlv --headless --listen=:40000 --api-version=2 exec ${PROJECT_ROOT}/server"
     env_file:
       - ".env.development"
 

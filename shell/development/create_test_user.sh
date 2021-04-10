@@ -1,0 +1,1 @@
+docker-compose -f docker/docker-compose.yaml -f docker/docker-compose.development.yaml --env-file=docker/.env.development run server go run cli/db-create-test-user/create.go

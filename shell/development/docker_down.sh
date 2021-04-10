@@ -1,1 +1,1 @@
-docker-compose -f docker/dev/docker-compose.yaml --env-file=.env down
+docker-compose -f docker/docker-compose.yaml -f docker/docker-compose.development.yaml --env-file=docker/.env.development down

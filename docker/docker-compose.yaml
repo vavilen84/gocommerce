@@ -6,7 +6,7 @@ services:
     build:
       context: ${APP_ROOT}
       args:
-        WORKDIR: ${PROJECT_ROOT}
+        WORKING_DIR: ${PROJECT_ROOT}
     networks:
       - local
     volumes:

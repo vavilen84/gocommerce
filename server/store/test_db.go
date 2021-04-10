@@ -43,7 +43,7 @@ func initTestDb() *sql.DB {
 		os.Getenv(constants.MysqlPasswordEnvVar),
 		os.Getenv(constants.DockerMysqlServiceEnvVar),
 		os.Getenv(constants.MysqlPortEnvVar),
-		os.Getenv(constants.MysqlTestDBEnvVar),
+		os.Getenv(constants.MysqlDBEnvVar),
 	)
 	return processInitDb(sqlServerDsn, mysqlDbName, DbDsn)
 }
