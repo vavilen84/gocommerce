@@ -1,12 +1,10 @@
 package store
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/vavilen84/gocommerce/constants"
-	"github.com/vavilen84/gocommerce/helpers"
 	"os"
 )
 
@@ -18,13 +16,8 @@ func InitTestDB() {
 	testDb = initTestDb()
 }
 
-func GetNewTestDBConn() (conn *sql.Conn, ctx context.Context) {
-	ctx = GetDefaultDBContext()
-	conn, err := testDb.Conn(ctx)
-	if err != nil {
-		helpers.LogError(err)
-	}
-	return
+func GetTestDB() *sql.DB {
+	return testDb
 }
 
 func initTestDb() *sql.DB {
@@ -32,7 +25,7 @@ func initTestDb() *sql.DB {
 		constants.SqlDsnFormat,
 		os.Getenv(constants.MysqlUserEnvVar),
 		os.Getenv(constants.MysqlPasswordEnvVar),
-		os.Getenv(constants.DockerMysqlServiceEnvVar),
+		os.Getenv(constants.MysqlHostEnvVar),
 		os.Getenv(constants.MysqlPortEnvVar),
 		"",
 	)
@@ -41,7 +34,7 @@ func initTestDb() *sql.DB {
 		constants.SqlDsnFormat,
 		os.Getenv(constants.MysqlUserEnvVar),
 		os.Getenv(constants.MysqlPasswordEnvVar),
-		os.Getenv(constants.DockerMysqlServiceEnvVar),
+		os.Getenv(constants.MysqlHostEnvVar),
 		os.Getenv(constants.MysqlPortEnvVar),
 		os.Getenv(constants.MysqlDBEnvVar),
 	)

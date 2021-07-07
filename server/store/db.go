@@ -1,11 +1,9 @@
 package store
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"github.com/vavilen84/gocommerce/constants"
-	"github.com/vavilen84/gocommerce/helpers"
 	"os"
 )
 
@@ -17,17 +15,12 @@ func InitDB() {
 	db = initDb()
 }
 
-func GetNewDBConn() (conn *sql.Conn, ctx context.Context) {
+func GetDB() *sql.DB {
 	// for endpoints testing. usage: os.Setenv(constants.AppEnvEnvVar, constants.TestingAppEnv)
 	if os.Getenv(constants.AppEnvEnvVar) == constants.TestingAppEnv {
-		return GetNewTestDBConn()
+		return GetTestDB()
 	}
-	ctx = GetDefaultDBContext()
-	conn, err := db.Conn(ctx)
-	if err != nil {
-		helpers.LogError(err)
-	}
-	return
+	return db
 }
 
 func initDb() *sql.DB {

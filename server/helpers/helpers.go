@@ -16,8 +16,20 @@ var (
 	charset    = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 )
 
-func LogFatal(msg string) {
-	err := errors.New(msg)
+func LogFatal(i interface{}) {
+	var err error
+
+	switch i.(type) {
+	case error:
+	case fmt.Stringer:
+		err = errors.New(i.(fmt.Stringer).String())
+	case string:
+		err = errors.New(i.(string))
+	default:
+		msg := fmt.Sprintf("log fatal: %v")
+		err = errors.New(msg)
+	}
+
 	LogError(err)
 	os.Exit(1)
 }

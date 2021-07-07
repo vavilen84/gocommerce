@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"database/sql"
+	"github.com/joho/godotenv"
 	"github.com/vavilen84/gocommerce/constants"
 	"github.com/vavilen84/gocommerce/helpers"
 	"github.com/vavilen84/gocommerce/store"
@@ -10,7 +11,13 @@ import (
 	"os"
 )
 
-func init() {
+func beforeTestRun() {
+	setTestAppEnv()
+	err := godotenv.Load("./../.env.development")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	store.InitTestDB()
 }
 

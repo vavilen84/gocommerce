@@ -3,18 +3,30 @@ package models
 import (
 	"github.com/stretchr/testify/assert"
 	"github.com/vavilen84/gocommerce/constants"
+	"github.com/vavilen84/gocommerce/helpers"
 	"github.com/vavilen84/gocommerce/store"
 	"github.com/vavilen84/gocommerce/validation"
 	"testing"
 )
 
 func TestProduct_ValidateOnCreate(t *testing.T) {
+
+	beforeTestRun()
+	db := store.GetTestDB()
+	ctx := store.GetDefaultDBContext()
+	conn, connErr := db.Conn(ctx)
+	if connErr != nil {
+		helpers.LogFatal(connErr)
+	}
+	defer conn.Close()
+	prepareTestDB(ctx, conn)
+
 	m := Product{}
 	err := validation.ValidateByScenario(constants.ScenarioCreate, &m)
 	assert.NotNil(t, err)
-	assert.NotEmpty(t, err[constants.ProductPriceField])
-	assert.NotEmpty(t, err[constants.ProductSKUField])
-	assert.NotEmpty(t, err[constants.ProductTitleField])
+	assert.NotEmpty(t, err.(validation.Errors)[constants.ProductPriceField])
+	assert.NotEmpty(t, err.(validation.Errors)[constants.ProductSKUField])
+	assert.NotEmpty(t, err.(validation.Errors)[constants.ProductTitleField])
 
 	m = Product{
 		Title: "product",
@@ -22,14 +34,18 @@ func TestProduct_ValidateOnCreate(t *testing.T) {
 		Price: 100,
 	}
 	err = validation.ValidateByScenario(constants.ScenarioCreate, &m)
-	assert.NotNil(t, err)
+	assert.Empty(t, err)
 }
 
 func TestProduct_Create(t *testing.T) {
 
-	setTestAppEnv()
-	store.InitTestDB()
-	conn, ctx := store.GetNewTestDBConn()
+	beforeTestRun()
+	db := store.GetTestDB()
+	ctx := store.GetDefaultDBContext()
+	conn, connErr := db.Conn(ctx)
+	if connErr != nil {
+		helpers.LogFatal(connErr)
+	}
 	defer conn.Close()
 	prepareTestDB(ctx, conn)
 

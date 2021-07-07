@@ -70,7 +70,7 @@ func getMigration(info os.FileInfo) (err error, m Migration) {
 func getMigrations() (err error, keys []int, list map[int64]Migration) {
 	list = make(map[int64]Migration)
 	keys = make([]int, 0)
-	err = filepath.Walk(os.Getenv("PROJECT_ROOT")+"/"+constants.MigrationsFolder, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(os.Getenv("APP_ROOT")+"/"+constants.MigrationsFolder, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			helpers.LogError(err)
 		}

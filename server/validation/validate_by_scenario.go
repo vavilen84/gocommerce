@@ -8,7 +8,7 @@ import (
 )
 
 // should be passed ptr to model m otherwise - func will panic
-func ValidateByScenario(scenario Scenario, m interfaces.Model) Errors {
+func ValidateByScenario(scenario Scenario, m interfaces.Model) error {
 	validate := m.GetValidator().(*validator.Validate)
 	validationMap := m.GetValidationRules().(ScenarioRules)
 	errs := make(Errors)
