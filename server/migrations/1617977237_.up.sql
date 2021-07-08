@@ -7,5 +7,4 @@ CREATE TABLE product
     created_at BIGINT UNSIGNED NOT NULL,
     updated_at BIGINT UNSIGNED NOT NULL,
     deleted_at BIGINT UNSIGNED NOT NULL
-) ENGINE = InnoDB
-  CHARSET = utf8;
+) ENGINE=InnoDB CHARSET=utf8;

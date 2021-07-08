@@ -63,14 +63,14 @@ func TxInsert(ctx context.Context, tx *sql.Tx, v interfaces.Model) error {
 	return nil
 }
 
-func Create(ctx context.Context, conn *sql.Conn, m interfaces.Model) (err error) {
+func Create(ctx context.Context, conn *sql.Conn, m interfaces.Model) (res interfaces.Model, err error) {
 	err = validation.ValidateByScenario(constants.ScenarioCreate, m)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	setTimestamps(constants.ScenarioCreate, m)
-	err = Insert(ctx, conn, m)
+	res, err = Insert(ctx, conn, m)
 	return
 }
 
@@ -96,7 +96,7 @@ func setTimestamp(elem reflect.Value, data map[string]interface{}, field string)
 	}
 }
 
-func Insert(ctx context.Context, conn *sql.Conn, v interfaces.Model) error {
+func Insert(ctx context.Context, conn *sql.Conn, v interfaces.Model) (interfaces.Model, error) {
 
 	reflectTypeOf := reflect.TypeOf(v)
 	reflectValueOf := reflect.ValueOf(v)
@@ -140,15 +140,15 @@ func Insert(ctx context.Context, conn *sql.Conn, v interfaces.Model) error {
 	res, err := conn.ExecContext(ctx, query, values...)
 	if err != nil {
 		helpers.LogError(err)
-		return err
+		return v, err
 	}
 	id, err := res.LastInsertId()
 	if err != nil {
 		helpers.LogError(err)
-		return err
+		return v, err
 	}
-	v.SetId(uint32(id))
-	return nil
+	inserted := v.SetId(uint32(id))
+	return inserted, nil
 }
 
 func Update(ctx context.Context, conn *sql.Conn, v interfaces.Model) error {

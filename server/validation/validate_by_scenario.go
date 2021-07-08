@@ -11,6 +11,7 @@ import (
 func ValidateByScenario(scenario Scenario, m interfaces.Model) error {
 	validate := m.GetValidator().(*validator.Validate)
 	validationMap := m.GetValidationRules().(ScenarioRules)
+	var result error
 	errs := make(Errors)
 	data := helpers.StructToMap(m)
 	for fieldName, validation := range validationMap[scenario] {
@@ -36,5 +37,8 @@ func ValidateByScenario(scenario Scenario, m interfaces.Model) error {
 			}
 		}
 	}
-	return errs
+	if len(errs) > 0 {
+		return errs
+	}
+	return result
 }

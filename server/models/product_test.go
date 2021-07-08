@@ -22,7 +22,7 @@ func TestProduct_ValidateOnCreate(t *testing.T) {
 	prepareTestDB(ctx, conn)
 
 	m := Product{}
-	err := validation.ValidateByScenario(constants.ScenarioCreate, &m)
+	err := validation.ValidateByScenario(constants.ScenarioCreate, m)
 	assert.NotNil(t, err)
 	assert.NotEmpty(t, err.(validation.Errors)[constants.ProductPriceField])
 	assert.NotEmpty(t, err.(validation.Errors)[constants.ProductSKUField])

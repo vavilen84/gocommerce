@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"github.com/vavilen84/gocommerce/constants"
 	"github.com/vavilen84/gocommerce/helpers"
+	"github.com/vavilen84/gocommerce/interfaces"
 	"github.com/vavilen84/gocommerce/orm"
 	"github.com/vavilen84/gocommerce/validation"
 	"gopkg.in/go-playground/validator.v9"
@@ -15,14 +16,14 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Migration struct {
-	Id       uint32 `json:"id" column:"id"`
-	Version  int64  `json:"version" column:"version"`
-	Filename string `json:"filename" column:"filename"`
-
-	CreatedAt int64 `json:"created_at" column:"created_at"`
+	Id        uint32 `json:"id" column:"id"`
+	Version   int64  `json:"version" column:"version"`
+	Filename  string `json:"filename" column:"filename"`
+	CreatedAt int64  `json:"created_at" column:"created_at"`
 }
 
 func (Migration) GetTableName() string {
@@ -33,8 +34,9 @@ func (m Migration) GetId() uint32 {
 	return m.Id
 }
 
-func (m *Migration) SetId(id uint32) {
+func (m Migration) SetId(id uint32) interfaces.Model {
 	m.Id = id
+	return m
 }
 
 func (Migration) GetValidationRules() interface{} {
@@ -61,8 +63,9 @@ func getMigration(info os.FileInfo) (err error, m Migration) {
 	}
 
 	m = Migration{
-		Filename: filename,
-		Version:  int64(version),
+		CreatedAt: time.Now().Unix(),
+		Filename:  filename,
+		Version:   int64(version),
 	}
 	return
 }
@@ -70,7 +73,7 @@ func getMigration(info os.FileInfo) (err error, m Migration) {
 func getMigrations() (err error, keys []int, list map[int64]Migration) {
 	list = make(map[int64]Migration)
 	keys = make([]int, 0)
-	err = filepath.Walk(os.Getenv("APP_ROOT")+"/"+constants.MigrationsFolder, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(os.Getenv(constants.AppRootEnvVar)+"/"+constants.MigrationsFolder, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			helpers.LogError(err)
 		}
@@ -113,13 +116,13 @@ func performMigrateTx(ctx context.Context, conn *sql.Conn, m Migration) error {
 		return beginTxErr
 	}
 
-	execErr := orm.TxInsert(ctx, tx, &m)
+	execErr := orm.TxInsert(ctx, tx, m)
 	if execErr != nil {
 		_ = tx.Rollback()
 		log.Fatal(execErr)
 		return execErr
 	}
-	content, readErr := ioutil.ReadFile(os.Getenv("PROJECT_ROOT") + "/" + constants.MigrationsFolder + "/" + m.Filename)
+	content, readErr := ioutil.ReadFile(os.Getenv(constants.AppRootEnvVar) + "/" + constants.MigrationsFolder + "/" + m.Filename)
 	if readErr != nil {
 		log.Fatal(readErr)
 		return readErr
@@ -170,8 +173,7 @@ func CreateMigrationsTableIfNotExists(ctx context.Context, conn *sql.Conn) error
    		id INT UNSIGNED NOT NULL PRIMARY KEY,
 			version BIGINT UNSIGNED NOT NULL,
 			filename varchar(255) NOT NULL,
-			created_at BIGINT UNSIGNED NOT NULL,
-			updated_at BIGINT UNSIGNED NOT NULL
+			created_at BIGINT UNSIGNED NOT NULL
 		) ENGINE=InnoDB CHARSET=utf8;
 	`
 	_, err := conn.ExecContext(ctx, query)

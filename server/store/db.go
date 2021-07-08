@@ -28,7 +28,7 @@ func initDb() *sql.DB {
 		constants.SqlDsnFormat,
 		os.Getenv(constants.MysqlUserEnvVar),
 		os.Getenv(constants.MysqlPasswordEnvVar),
-		os.Getenv(constants.DockerMysqlServiceEnvVar),
+		os.Getenv(constants.MysqlHostEnvVar),
 		os.Getenv(constants.MysqlPortEnvVar),
 		"",
 	)
@@ -37,7 +37,7 @@ func initDb() *sql.DB {
 		constants.SqlDsnFormat,
 		os.Getenv(constants.MysqlUserEnvVar),
 		os.Getenv(constants.MysqlPasswordEnvVar),
-		os.Getenv(constants.DockerMysqlServiceEnvVar),
+		os.Getenv(constants.MysqlHostEnvVar),
 		os.Getenv(constants.MysqlPortEnvVar),
 		os.Getenv(constants.MysqlDBEnvVar),
 	)

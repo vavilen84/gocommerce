@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/vavilen84/gocommerce/constants"
 	"github.com/vavilen84/gocommerce/helpers"
+	"github.com/vavilen84/gocommerce/interfaces"
 	"github.com/vavilen84/gocommerce/orm"
 	"github.com/vavilen84/gocommerce/validation"
 	"gopkg.in/go-playground/validator.v9"
@@ -28,8 +29,9 @@ func (m Product) GetId() uint32 {
 	return m.Id
 }
 
-func (m *Product) SetId(id uint32) {
+func (m Product) SetId(id uint32) interfaces.Model {
 	m.Id = id
+	return m
 }
 
 func (Product) GetTableName() string {
@@ -65,7 +67,8 @@ func ValidateSKU(fl validator.FieldLevel) (r bool) {
 }
 
 func (m *Product) Create(ctx context.Context, conn *sql.Conn) (err error) {
-	err = orm.Create(ctx, conn, m)
+	res, err := orm.Create(ctx, conn, *m)
+	*m = res.(Product)
 	if err != nil {
 		log.Println(err)
 	}
@@ -73,7 +76,7 @@ func (m *Product) Create(ctx context.Context, conn *sql.Conn) (err error) {
 }
 
 func FindProductById(ctx context.Context, conn *sql.Conn, id uint32) (m Product, err error) {
-	m.SetId(id)
+	m.Id = id
 	err = orm.FindById(ctx, conn, &m)
 	return
 }

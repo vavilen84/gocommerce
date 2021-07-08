@@ -19,6 +19,9 @@ const (
 	MysqlDBEnvVar       = "MYSQL_DATABASE"
 	MysqlPasswordEnvVar = "MYSQL_PASSWORD"
 
+	AppRootEnvVar     = "APP_ROOT"
+	ProjectRootEnvVar = "PROJECT_ROOT"
+
 	SqlDriverEnvVar          = "SQL_DRIVER"
 	MysqlPortEnvVar          = "MYSQL_PORT"
 	MysqlHostEnvVar          = "MYSQL_HOST"
