@@ -66,7 +66,7 @@ func GenerateRandomString(length int) string {
 // need pass ptr or interface instead of struct - otherwise func panics
 func StructToMap(input interface{}) map[string]interface{} {
 	r := make(map[string]interface{})
-	s := reflect.ValueOf(input).Elem()
+	s := reflect.ValueOf(input)
 	typeOfT := s.Type()
 	for i := 0; i < s.NumField(); i++ {
 		f := s.Field(i)

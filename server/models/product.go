@@ -12,6 +12,7 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 	"log"
 	"regexp"
+	"time"
 )
 
 type Product struct {
@@ -31,6 +32,21 @@ func (m Product) GetId() uint32 {
 
 func (m Product) SetId(id uint32) interfaces.Model {
 	m.Id = id
+	return m
+}
+
+func (m Product) SetCreatedAt() interfaces.Model {
+	m.CreatedAt = time.Now().Unix()
+	return m
+}
+
+func (m Product) SetUpdatedAt() interfaces.Model {
+	m.UpdatedAt = time.Now().Unix()
+	return m
+}
+
+func (m Product) SetDeletedAt() interfaces.Model {
+	m.DeletedAt = time.Now().Unix()
 	return m
 }
 
@@ -77,6 +93,10 @@ func (m *Product) Create(ctx context.Context, conn *sql.Conn) (err error) {
 
 func FindProductById(ctx context.Context, conn *sql.Conn, id uint32) (m Product, err error) {
 	m.Id = id
-	err = orm.FindById(ctx, conn, &m)
+	row := conn.QueryRowContext(ctx, `SELECT * FROM `+m.GetTableName()+` WHERE id = ?`, id)
+	err = row.Scan(&m.Id, &m.Title, &m.SKU, &m.Price, &m.CreatedAt, &m.UpdatedAt, &m.DeletedAt)
+	if err != nil {
+		log.Println(err)
+	}
 	return
 }

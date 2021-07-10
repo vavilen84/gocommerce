@@ -33,7 +33,7 @@ func TestProduct_ValidateOnCreate(t *testing.T) {
 		SKU:   "sku-123_123",
 		Price: 100,
 	}
-	err = validation.ValidateByScenario(constants.ScenarioCreate, &m)
+	err = validation.ValidateByScenario(constants.ScenarioCreate, m)
 	assert.Empty(t, err)
 }
 

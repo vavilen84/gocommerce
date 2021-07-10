@@ -11,7 +11,6 @@ import (
 	"log"
 	"reflect"
 	"strings"
-	"time"
 )
 
 func TxInsert(ctx context.Context, tx *sql.Tx, v interfaces.Model) error {
@@ -75,24 +74,14 @@ func Create(ctx context.Context, conn *sql.Conn, m interfaces.Model) (res interf
 }
 
 func setTimestamps(scenario string, m interfaces.Model) {
-
-	elem := reflect.ValueOf(m).Elem()
-	data := helpers.StructToMap(m)
-
 	switch scenario {
 	case constants.ScenarioCreate:
-		setTimestamp(elem, data, constants.CommonCreatedAtField)
-		setTimestamp(elem, data, constants.CommonUpdatedAtField)
+		m.SetCreatedAt()
+		m.SetUpdatedAt()
 	case constants.ScenarioUpdate:
-		setTimestamp(elem, data, constants.CommonUpdatedAtField)
+		m.SetUpdatedAt()
 	case constants.ScenarioDelete:
-		setTimestamp(elem, data, constants.CommonDeletedAtField)
-	}
-}
-
-func setTimestamp(elem reflect.Value, data map[string]interface{}, field string) {
-	if _, ok := data[field]; ok {
-		elem.FieldByName(field).SetInt(time.Now().Unix())
+		m.SetDeletedAt()
 	}
 }
 
@@ -204,11 +193,5 @@ func Update(ctx context.Context, conn *sql.Conn, v interfaces.Model) error {
 
 func DeleteById(ctx context.Context, conn *sql.Conn, v interfaces.Model) error {
 	_, err := conn.ExecContext(ctx, `DELETE FROM `+v.GetTableName()+` WHERE id = ?`, v.GetId())
-	return err
-}
-
-func FindById(ctx context.Context, conn *sql.Conn, v interfaces.Model) (err error) {
-	row := conn.QueryRowContext(ctx, `SELECT * FROM `+v.GetTableName()+` WHERE id = ?`, v.GetId())
-	err = row.Scan(v)
 	return err
 }

@@ -39,6 +39,19 @@ func (m Migration) SetId(id uint32) interfaces.Model {
 	return m
 }
 
+func (m Migration) SetCreatedAt() interfaces.Model {
+	m.CreatedAt = time.Now().Unix()
+	return m
+}
+
+func (m Migration) SetUpdatedAt() interfaces.Model {
+	return m
+}
+
+func (m Migration) SetDeletedAt() interfaces.Model {
+	return m
+}
+
 func (Migration) GetValidationRules() interface{} {
 	return validation.ScenarioRules{
 		constants.ScenarioCreate: validation.FieldRules{
@@ -149,7 +162,7 @@ func apply(ctx context.Context, conn *sql.Conn, k int, list map[int64]Migration)
 	err := row.Scan(&version)
 	if err == sql.ErrNoRows {
 
-		validationErr := validation.ValidateByScenario(constants.ScenarioCreate, &m)
+		validationErr := validation.ValidateByScenario(constants.ScenarioCreate, m)
 		if validationErr != nil {
 			log.Println(validationErr)
 			return validationErr
