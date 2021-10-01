@@ -6,7 +6,7 @@ package models
 //	"orm/sql"
 //	"github.com/vavilen84/gocommerce/constants"
 //	"github.com/vavilen84/gocommerce/orm"
-//	"github.com/vavilen84/gocommerce/validation"
+//	"github.com/vavilen84/gocommerce/validator"
 //	"gopkg.in/go-playground/validator.v9"
 //	"log"
 //)
@@ -31,9 +31,9 @@ package models
 //	return constants.TaxDBTable
 //}
 //
-//func (Discount) getValidationRules() validation.ScenarioRules {
-//	return validation.ScenarioRules{
-//		constants.ScenarioCreate: validation.FieldRules{
+//func (Discount) getValidationRules() validator.ScenarioRules {
+//	return validator.ScenarioRules{
+//		constants.ScenarioCreate: validator.FieldRules{
 //			constants.DiscountTitleField:      "required",
 //			constants.DiscountAmountField:     "min=1",
 //			constants.DiscountPercentageField: "min=1,max=100",
@@ -48,7 +48,7 @@ package models
 //}
 //
 //func (m Discount) Create(ctx context.Context, conn *sql.Conn) (err error) {
-//	err = validation.ValidateByScenario(constants.ScenarioCreate, m, m.getValidator(), m.getValidationRules())
+//	err = validator.ValidateByScenario(constants.ScenarioCreate, m, m.getValidator(), m.getValidationRules())
 //	if err != nil {
 //		log.Println(err)
 //		return

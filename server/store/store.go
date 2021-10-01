@@ -1,53 +1,43 @@
 package store
 
 import (
-	"context"
-	"database/sql"
+	"fmt"
+	"github.com/beego/beego/v2/adapter/orm"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/vavilen84/gocommerce/constants"
-	"github.com/vavilen84/gocommerce/helpers"
-	"log"
+	"github.com/vavilen84/gocommerce/logger"
 	"os"
-	"time"
 )
 
-func createDbIfNotExists(ctx context.Context, conn *sql.Conn, dbName string) (err error) {
-	_, err = conn.ExecContext(ctx, "CREATE DATABASE IF NOT EXISTS "+dbName)
-	if err != nil {
-		log.Print(err.Error())
-		return err
-	}
-	return nil
+func InitTestORM() {
+	registerDriver()
+	registerDatabase(os.Getenv(constants.MysqlTestDBEnvVar))
+	orm.Debug = true
 }
 
-func GetDefaultDBContext() context.Context {
-	parentCtx := context.Background()
-	ctx, _ := context.WithTimeout(parentCtx, constants.DefaultStoreTimeout)
-	return ctx
+func InitORM() {
+	registerDriver()
+	registerDatabase(os.Getenv(constants.MysqlDBEnvVar))
 }
 
-func processInitDb(sqlServerDsn, mysqlDbName, DbDsn string) (db *sql.DB) {
-	sqlDriver := os.Getenv(constants.SqlDriverEnvVar)
-	// use credentials without db in order to create db
-	db, err := sql.Open(sqlDriver, sqlServerDsn)
+func registerDriver() {
+	err := orm.RegisterDriver(os.Getenv(constants.SqlDriverEnvVar), orm.DRMySQL)
 	if err != nil {
-		panic("failed to connect sql server: " + err.Error())
+		logger.LogFatal(err)
 	}
-	ctx := GetDefaultDBContext()
-	conn, err := db.Conn(ctx)
+}
+
+func registerDatabase(mysqlDbName string) {
+	dbDsn := fmt.Sprintf(
+		constants.SqlDsnFormat,
+		os.Getenv(constants.MysqlUserEnvVar),
+		os.Getenv(constants.MysqlPasswordEnvVar),
+		os.Getenv(constants.MysqlHostEnvVar),
+		os.Getenv(constants.MysqlPortEnvVar),
+		mysqlDbName,
+	)
+	err := orm.RegisterDataBase(constants.DefaultDBAlias, os.Getenv(constants.SqlDriverEnvVar), dbDsn, 10, 10)
 	if err != nil {
-		helpers.LogError(err)
+		logger.LogFatal(err)
 	}
-	defer conn.Close()
-	err = createDbIfNotExists(ctx, conn, mysqlDbName)
-	if err != nil {
-		panic("failed to create test db: " + err.Error())
-	}
-	db, err = sql.Open(sqlDriver, DbDsn)
-	if err != nil {
-		panic("failed to orm: " + err.Error())
-	}
-	db.SetConnMaxLifetime(time.Minute * 3)
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(10)
-	return
 }

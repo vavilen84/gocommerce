@@ -4,14 +4,14 @@ package models
 //import (
 //	"github.com/stretchr/testify/assert"
 //	"github.com/vavilen84/gocommerce/constants"
-//	"github.com/vavilen84/gocommerce/validation"
+//	"github.com/vavilen84/gocommerce/validator"
 //	"testing"
 //	"time"
 //)
 //
 //func TestMigration_ValidateOnCreate(t *testing.T) {
 //	m := Migration{}
-//	err := validation.ValidateByScenario(constants.ScenarioCreate, &m, m.getValidator(), m.getValidationRules())
+//	err := validator.ValidateByScenario(constants.ScenarioCreate, &m, m.getValidator(), m.getValidationRules())
 //	assert.NotEmpty(t, err)
 //	assert.NotEmpty(t, err[constants.MigrationCreatedAtField])
 //	assert.NotEmpty(t, err[constants.MigrationVersionField])
@@ -22,6 +22,6 @@ package models
 //		Filename:  "inital_migration",
 //		CreatedAt: time.Now().Unix(),
 //	}
-//	err = validation.ValidateByScenario(constants.ScenarioCreate, &m, m.getValidator(), m.getValidationRules())
+//	err = validator.ValidateByScenario(constants.ScenarioCreate, &m, m.getValidator(), m.getValidationRules())
 //	assert.Empty(t, err)
 //}

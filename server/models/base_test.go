@@ -3,9 +3,11 @@ package models
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"github.com/beego/beego/v2/adapter/orm"
 	"github.com/joho/godotenv"
 	"github.com/vavilen84/gocommerce/constants"
-	"github.com/vavilen84/gocommerce/helpers"
+	"github.com/vavilen84/gocommerce/logger"
 	"github.com/vavilen84/gocommerce/store"
 	"log"
 	"os"
@@ -15,36 +17,42 @@ func beforeTestRun() {
 	setTestAppEnv()
 	err := godotenv.Load("./../.env.development")
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		logger.LogFatal("Error loading .env file")
 	}
 
-	store.InitTestDB()
+	store.InitTestORM()
 }
 
 func setTestAppEnv() {
 	err := os.Setenv(constants.AppEnvEnvVar, constants.TestingAppEnv)
 	if err != nil {
-		helpers.LogError(err)
+		logger.LogError(err)
 	}
 }
 
 /**
  * ! IMPORTANT - dont use for production DB !
  */
-func prepareTestDB(ctx context.Context, conn *sql.Conn) {
-	dropAllTablesFromTestDB(ctx, conn)
-	err := CreateMigrationsTableIfNotExists(ctx, conn)
+func prepareTestDB() {
+
+	err := orm.RunSyncdb(constants.DefaultDBAlias, true, true)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 	}
 
-	err = MigrateUp(ctx, conn)
-	if err != nil {
-		log.Println(err)
-	}
-
-	LoadFixtures(ctx, conn)
-	return
+	//dropAllTablesFromTestDB(ctx, conn)
+	//err := CreateMigrationsTableIfNotExists(ctx, conn)
+	//if err != nil {
+	//	log.Println(err)
+	//}
+	//
+	//err = MigrateUp(ctx, conn)
+	//if err != nil {
+	//	log.Println(err)
+	//}
+	//
+	//LoadFixtures(ctx, conn)
+	//return
 }
 
 /**

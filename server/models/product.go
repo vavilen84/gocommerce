@@ -1,82 +1,49 @@
 package models
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
+	"github.com/beego/beego/v2/adapter/orm"
+	"github.com/beego/beego/v2/core/validation"
 	"github.com/vavilen84/gocommerce/constants"
-	"github.com/vavilen84/gocommerce/helpers"
-	"github.com/vavilen84/gocommerce/interfaces"
-	"github.com/vavilen84/gocommerce/orm"
-	"github.com/vavilen84/gocommerce/validation"
-	"gopkg.in/go-playground/validator.v9"
-	"log"
+	"github.com/vavilen84/gocommerce/logger"
 	"regexp"
 )
 
 type Product struct {
-	Id    uint32 `json:"id" column:"id"`
+	Id    int64  `json:"id" column:"id"`
 	Title string `json:"title" column:"title"`
 	SKU   string `json:"sku" column:"sku"`
-	Price uint64 `json:"price" column:"price"`
+	Price int    `json:"price" column:"price"`
 
-	CreatedAt int64 `json:"created_at" column:"created_at"`
-	UpdatedAt int64 `json:"updated_at" column:"updated_at"`
-	DeletedAt int64 `json:"deleted_at" column:"deleted_at"`
+	CreatedAt int `json:"created_at" column:"created_at"`
+	UpdatedAt int `json:"updated_at" column:"updated_at"`
+	DeletedAt int `json:"deleted_at" column:"deleted_at"`
 }
 
-func (m Product) GetId() uint32 {
-	return m.Id
-}
+func (p Product) validateOnInsert() bool {
+	valid := validation.Validation{}
+	valid.Required(p.Title, "title_required")
+	valid.Required(p.SKU, "sku_required")
+	valid.Match(p.SKU, regexp.MustCompile(`^[a-z0-9_-]*$`), "sku_match")
+	valid.Required(p.Price, "price_required")
 
-func (m Product) SetId(id uint32) interfaces.Model {
-	m.Id = id
-	return m
-}
-
-func (Product) GetTableName() string {
-	return constants.ProductDBTable
-}
-
-func (Product) GetValidationRules() interface{} {
-	return validation.ScenarioRules{
-		constants.ScenarioCreate: validation.FieldRules{
-			constants.ProductTitleField: "required,min=1,max=255",
-			constants.ProductSKUField:   "required,min=1,max=255,sku",
-			constants.ProductPriceField: "required,min=0,max=999999999999",
-		},
+	if valid.HasErrors() {
+		for _, err := range valid.Errors {
+			logger.LogModelFieldNotValidError(constants.ProductModel, err.Key, err.Message)
+		}
+		return false
 	}
+	return true
 }
 
-func (Product) GetValidator() interface{} {
-	v := validator.New()
-	err := v.RegisterValidation("sku", ValidateSKU)
+func (p *Product) Insert(o orm.Ormer) error {
+	valid := p.validateOnInsert()
+	if !valid {
+		logger.LogModelNotValidError(constants.ProductModel)
+	}
+	_, err := o.Insert(p)
 	if err != nil {
-		helpers.LogError(err)
+		logger.LogOrmerError(constants.ProductModel, err)
+		return err
 	}
-	return v
-}
-
-func ValidateSKU(fl validator.FieldLevel) (r bool) {
-	pattern := `^[a-z0-9_-]*$`
-	r, err := regexp.Match(pattern, []byte(fl.Field().String()))
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	return
-}
-
-func (m *Product) Create(ctx context.Context, conn *sql.Conn) (err error) {
-	res, err := orm.Create(ctx, conn, *m)
-	*m = res.(Product)
-	if err != nil {
-		log.Println(err)
-	}
-	return
-}
-
-func FindProductById(ctx context.Context, conn *sql.Conn, id uint32) (m Product, err error) {
-	m.Id = id
-	err = orm.FindById(ctx, conn, &m)
-	return
+	return nil
 }

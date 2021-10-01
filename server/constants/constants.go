@@ -34,6 +34,9 @@ const (
 	ProductionAppEnv  = "production"
 	TestingAppEnv     = "testing"
 
+	// db
+	DefaultDBAlias = "default"
+
 	// db tables
 	MigrationDBTable            = "migration"
 	ProductDBTable              = "product"
@@ -54,13 +57,13 @@ const (
 	ScenarioUpdate = "update"
 	ScenarioDelete = "delete"
 
-	// validation tags
+	// validator tags
 	RequiredTag = "required"
 	MinTag      = "min"
 	MaxTag      = "max"
 	EmailTag    = "email"
 
-	// validation error messages
+	// validator error messages
 	RequiredErrorMsg = "%s resource: '%s' is required"
 	MinValueErrorMsg = "%s resource: '%s' min value is %s"
 	MaxValueErrorMsg = "%s resource: '%s' max value is %s"
@@ -73,6 +76,7 @@ const (
 
 	// model names
 	MigrationModel = "Migration"
+	ProductModel   = "Product"
 
 	// field names
 

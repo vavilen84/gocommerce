@@ -6,7 +6,7 @@ package models
 //	"orm/sql"
 //	"github.com/vavilen84/gocommerce/constants"
 //	"github.com/vavilen84/gocommerce/orm"
-//	"github.com/vavilen84/gocommerce/validation"
+//	"github.com/vavilen84/gocommerce/validator"
 //	"gopkg.in/go-playground/validator.v9"
 //	"log"
 //)
@@ -30,9 +30,9 @@ package models
 //	return constants.CustomerDBTable
 //}
 //
-//func (Customer) getValidationRules() validation.ScenarioRules {
-//	return validation.ScenarioRules{
-//		constants.ScenarioCreate: validation.FieldRules{
+//func (Customer) getValidationRules() validator.ScenarioRules {
+//	return validator.ScenarioRules{
+//		constants.ScenarioCreate: validator.FieldRules{
 //			constants.CustomerEmailField:     "required,min=1,max=255,email",
 //			constants.CustomerFirstNameField: "required,min=1,max=255",
 //			constants.CustomerLastNameField:  "required,min=1,max=255",
@@ -46,7 +46,7 @@ package models
 //}
 //
 //func (m Customer) Create(ctx context.Context, conn *sql.Conn) (err error) {
-//	err = validation.ValidateByScenario(constants.ScenarioCreate, m, m.getValidator(), m.getValidationRules())
+//	err = validator.ValidateByScenario(constants.ScenarioCreate, m, m.getValidator(), m.getValidationRules())
 //	if err != nil {
 //		log.Println(err)
 //		return

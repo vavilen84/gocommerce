@@ -1,14 +1,19 @@
 package main
 
 import (
-	"github.com/vavilen84/gocommerce/handlers"
+	beego "github.com/beego/beego/v2/server/web"
+	_ "github.com/vavilen84/gocommerce/routers"
 	"github.com/vavilen84/gocommerce/store"
-	"log"
 )
 
+func init() {
+	store.InitORM()
+}
+
 func main() {
-	store.InitDB()
-	handler := handlers.MakeHandler()
-	httpServer := handlers.InitHttpServer(handler)
-	log.Fatal(httpServer.ListenAndServe())
+	if beego.BConfig.RunMode == "dev" {
+		beego.BConfig.WebConfig.DirectoryIndex = true
+		beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
+	}
+	beego.Run()
 }

@@ -4,13 +4,13 @@ package models
 //import (
 //	"github.com/stretchr/testify/assert"
 //	"github.com/vavilen84/gocommerce/constants"
-//	"github.com/vavilen84/gocommerce/validation"
+//	"github.com/vavilen84/gocommerce/validator"
 //	"testing"
 //)
 //
 //func TestTax_ValidateOnCreate(t *testing.T) {
 //	m := Tax{}
-//	err := validation.ValidateByScenario(constants.ScenarioCreate, &m, m.getValidator(), m.getValidationRules())
+//	err := validator.ValidateByScenario(constants.ScenarioCreate, &m, m.getValidator(), m.getValidationRules())
 //	assert.NotNil(t, err)
 //	assert.NotEmpty(t, err[constants.TaxTitleField])
 //	assert.NotEmpty(t, err[constants.TaxAmountField])
@@ -22,7 +22,7 @@ package models
 //		Amount: 1,
 //		Type:   constants.TaxCartType,
 //	}
-//	err = validation.ValidateByScenario(constants.ScenarioCreate, &m, m.getValidator(), m.getValidationRules())
+//	err = validator.ValidateByScenario(constants.ScenarioCreate, &m, m.getValidator(), m.getValidationRules())
 //	assert.NotNil(t, err)
 //
 //	m = Tax{
@@ -30,6 +30,6 @@ package models
 //		Percentage: 1,
 //		Type:       constants.TaxCategoryType,
 //	}
-//	err = validation.ValidateByScenario(constants.ScenarioCreate, &m, m.getValidator(), m.getValidationRules())
+//	err = validator.ValidateByScenario(constants.ScenarioCreate, &m, m.getValidator(), m.getValidationRules())
 //	assert.NotNil(t, err)
 //}
