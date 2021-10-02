@@ -10,7 +10,7 @@ import (
 )
 
 type Product struct {
-	Id    int64  `json:"id" orm:"column(id)"`
+	Id    int64  `json:"id" orm:"pk"`
 	Title string `json:"title" orm:"column(title)"`
 	SKU   string `json:"sku" orm:"column(sku)"`
 	Price int64  `json:"price" orm:"column(price)"`

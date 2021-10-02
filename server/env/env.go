@@ -17,6 +17,17 @@ func GetDbDsn(dbname string) string {
 	)
 }
 
+func GetSQLServerDsn() string {
+	return fmt.Sprintf(
+		constants.SqlDsnFormat,
+		os.Getenv(constants.MysqlUserEnvVar),
+		os.Getenv(constants.MysqlPasswordEnvVar),
+		os.Getenv(constants.MysqlHostEnvVar),
+		os.Getenv(constants.MysqlPortEnvVar),
+		"",
+	)
+}
+
 func GetSQLDriver() string {
 	return os.Getenv(constants.SqlDriverEnvVar)
 }

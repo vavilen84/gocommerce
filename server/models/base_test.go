@@ -1,7 +1,6 @@
 package models
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"github.com/joho/godotenv"
@@ -9,7 +8,6 @@ import (
 	"github.com/vavilen84/gocommerce/env"
 	"github.com/vavilen84/gocommerce/logger"
 	"github.com/vavilen84/gocommerce/store"
-	"log"
 	"os"
 	"os/exec"
 )
@@ -36,6 +34,7 @@ func setTestAppEnv() {
  * ! IMPORTANT - dont use for production DB !
  */
 func prepareTestDB() {
+	clearTestDb()
 	err := os.Chdir(os.Getenv(constants.AppRootEnvVar))
 	if err != nil {
 		fmt.Println(err)
@@ -43,7 +42,7 @@ func prepareTestDB() {
 	cmd := exec.Command(
 		"bee",
 		"migrate",
-		"reset",
+		"refresh",
 		"-driver="+env.GetSQLDriver(),
 		"-conn="+env.GetDbDsn(env.GetMySQLTestDb()),
 	)
@@ -52,6 +51,7 @@ func prepareTestDB() {
 		fmt.Println(err)
 	}
 	fmt.Println(string(out))
+
 	cmd = exec.Command(
 		"bee",
 		"migrate",
@@ -63,6 +63,7 @@ func prepareTestDB() {
 		fmt.Println(err)
 	}
 	fmt.Println(string(out))
+
 	//err := orm.RunSyncdb(constants.DefaultDBAlias, true, true)
 	//if err != nil {
 	//	fmt.Println(err)
@@ -86,15 +87,24 @@ func prepareTestDB() {
 /**
  * ! IMPORTANT - dont use for production DB !
  */
-func dropAllTablesFromTestDB(ctx context.Context, conn *sql.Conn) {
-	tables := []string{
-		constants.MigrationDBTable,
-		constants.ProductDBTable,
+func clearTestDb() {
+	// use credentials without db in order to create db
+	db, err := sql.Open(env.GetSQLDriver(), env.GetSQLServerDsn())
+	if err != nil {
+		logger.LogFatal(err)
 	}
-	for i := 0; i < len(tables); i++ {
-		_, err := conn.ExecContext(ctx, "DROP TABLE IF EXISTS "+tables[i])
-		if err != nil {
-			log.Println(err)
-		}
+	ctx := store.GetDefaultDBContext()
+	conn, err := db.Conn(ctx)
+	if err != nil {
+		logger.LogFatal(err)
+	}
+	defer conn.Close()
+	_, err = conn.ExecContext(ctx, "DROP DATABASE "+env.GetMySQLTestDb())
+	if err != nil {
+		logger.LogFatal(err)
+	}
+	_, err = conn.ExecContext(ctx, "CREATE DATABASE IF NOT EXISTS "+env.GetMySQLTestDb())
+	if err != nil {
+		logger.LogFatal(err)
 	}
 }
