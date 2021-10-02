@@ -1,10 +1,19 @@
 package models
 
-import (
-	"context"
-	"database/sql"
+const (
+	Product1Sku = "product_1_sku"
 )
 
-func LoadFixtures(ctx context.Context, conn *sql.Conn) {
+var (
+	productsFixtures map[int]Product
+)
 
+func init() {
+	productsFixtures = map[int]Product{
+		1: {
+			Title: "Product #1 title",
+			SKU:   Product1Sku,
+			Price: 1,
+		},
+	}
 }

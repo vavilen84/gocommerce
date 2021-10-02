@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
-	"log"
 	"os"
 	"runtime"
 )
@@ -23,27 +22,18 @@ func LogModelFieldNotValidError(model string, v ...interface{}) {
 	logs.Error("Validation error. Model %v. Field: ", model, v)
 }
 
-func LogModelNotValidError(model string) {
-	logs.Error("Model validation . Model %v is not valid")
-}
-
 func LogError(err error) {
 	_, fn, line, _ := runtime.Caller(1)
-	log.Printf("[error] %s:%d %v\n", fn, line, err)
-	logs.Error("Error. Message: ", err.Error())
+	logs.Error("Error. %v; Line: %d; Message: %v", fn, line, err.Error())
 }
 
 func LogCmdOut(i string) {
 	logs.Info("CMD Out. Message: ", i)
 }
 
-func LogFormattedError(err error) {
-	_, fn, line, _ := runtime.Caller(1)
-	log.Printf("[error] %s:%d %v\n", fn, line, err)
-}
-
 func LogOrmerError(model string, err error) {
-	logs.Error(nil, "Ormer error. Model %v. Message: ", err.Error())
+	_, fn, line, _ := runtime.Caller(1)
+	logs.Error("Ormer error. Model %v; %v; Line: %d; Message: ", model, fn, line, err.Error())
 }
 
 func LogFatal(i interface{}) {

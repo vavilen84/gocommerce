@@ -1,6 +1,8 @@
 package models
 
 import (
+	"errors"
+	"fmt"
 	"github.com/beego/beego/v2/adapter/orm"
 	"github.com/beego/beego/v2/core/validation"
 	"github.com/vavilen84/gocommerce/constants"
@@ -20,7 +22,7 @@ type Product struct {
 	DeletedAt *int64 `json:"deleted_at" orm:"column(deleted_at)"`
 }
 
-func (p Product) validateOnInsert() bool {
+func (p Product) validateOnInsert() error {
 	valid := validation.Validation{}
 	valid.Required(p.Title, "title_required")
 	valid.Required(p.SKU, "sku_required")
@@ -31,9 +33,10 @@ func (p Product) validateOnInsert() bool {
 		for _, err := range valid.Errors {
 			logger.LogModelFieldNotValidError(constants.ProductModel, err.Key, err.Message)
 		}
-		return false
+		e := errors.New(fmt.Sprintf("Model %v is not valid", constants.ProductModel))
+		return e
 	}
-	return true
+	return nil
 }
 
 func (p *Product) setTimestampsOnCreate() {
@@ -43,15 +46,72 @@ func (p *Product) setTimestampsOnCreate() {
 }
 
 func (p *Product) Insert(o orm.Ormer) error {
-	valid := p.validateOnInsert()
-	if !valid {
-		logger.LogModelNotValidError(constants.ProductModel)
+	err := p.validateOnInsert()
+	if err != nil {
+		logger.LogError(err)
+		return err
 	}
 	p.setTimestampsOnCreate()
-	_, err := o.Insert(p)
+	_, err = o.Insert(p)
 	if err != nil {
 		logger.LogOrmerError(constants.ProductModel, err)
 		return err
+	}
+	return nil
+}
+
+func (p *Product) FindById(o orm.Ormer) error {
+	err := o.Read(p)
+	if err != nil {
+		logger.LogOrmerError(constants.ProductModel, err)
+		return err
+	}
+	return nil
+}
+
+func (p *Product) FindBySKU(o orm.Ormer) error {
+	qs := o.QueryTable(p)
+	err := qs.Filter("sku", p.SKU).One(p)
+	if err != nil {
+		logger.LogOrmerError(constants.ProductModel, err)
+		return err
+	}
+	return nil
+}
+
+func (p *Product) validateProductExists(o orm.Ormer) error {
+	m := Product{Id: p.Id}
+	err := o.Read(&m)
+	if err != nil {
+		logger.LogOrmerError(constants.ProductModel, err)
+		return err
+	}
+	return nil
+}
+
+func (p *Product) Update(o orm.Ormer) error {
+	err := p.validateProductExists(o)
+	if err != nil {
+		logger.LogOrmerError(constants.ProductModel, err)
+		return err
+	}
+	_, err = o.Update(p)
+	if err != nil {
+		logger.LogOrmerError(constants.ProductModel, err)
+		return err
+	}
+	return nil
+}
+
+func (p *Product) Delete(o orm.Ormer) error {
+	err := p.validateProductExists(o)
+	if err != nil {
+		logger.LogOrmerError(constants.ProductModel, err)
+		return err
+	}
+	_, err = o.Delete(p)
+	if err != nil {
+		logger.LogOrmerError(constants.ProductModel, err)
 	}
 	return nil
 }
