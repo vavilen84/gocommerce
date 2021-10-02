@@ -5,7 +5,9 @@ import "time"
 const (
 
 	//common
-	SqlDsnFormat = `%s:%s@tcp(%s:%s)/%s`
+	SqlDsnFormat   = `%s:%s@tcp(%s:%s)/%s`
+	TmpFolder      = "tmp"
+	TestDbDumpFile = "test_db_dump.sql"
 
 	// DEPRECATED! use default db & user for testing purposes
 	// test db & test user
@@ -142,7 +144,7 @@ const (
 	OrderProductDiscountOrderProductIdField = "OrderProductId"
 	OrderProductDiscountDiscountIdField     = "DiscountId"
 
-	// common
+	// common fields
 	CommonCreatedAtField = "CreatedAt"
 	CommonUpdatedAtField = "UpdatedAt"
 	CommonDeletedAtField = "DeletedAt"

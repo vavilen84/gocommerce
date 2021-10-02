@@ -22,7 +22,7 @@ func (m *AddProductTable_20211001_202841) Up() {
 	m.SQL(`
 		CREATE TABLE product
 		(
-			id         INT UNSIGNED NOT NULL PRIMARY KEY,
+			id         INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
 			title      varchar(255) NOT NULL,
 			sku        varchar(255) NOT NULL,
 			price      BIGINT UNSIGNED NOT NULL,

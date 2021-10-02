@@ -28,6 +28,14 @@ func GetSQLServerDsn() string {
 	)
 }
 
+func GetMySQLUser() string {
+	return os.Getenv(constants.MysqlUserEnvVar)
+}
+
+func GetMySQLUserPass() string {
+	return os.Getenv(constants.MysqlPasswordEnvVar)
+}
+
 func GetSQLDriver() string {
 	return os.Getenv(constants.SqlDriverEnvVar)
 }
@@ -38,4 +46,8 @@ func GetMySQLDb() string {
 
 func GetMySQLTestDb() string {
 	return os.Getenv(constants.MysqlTestDBEnvVar)
+}
+
+func GetAppRoot() string {
+	return os.Getenv(constants.AppRootEnvVar)
 }

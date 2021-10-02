@@ -20,15 +20,21 @@ func InitLogger() {
 }
 
 func LogModelFieldNotValidError(model string, v ...interface{}) {
-	logs.Error(nil, "Validation error. Model %v. Field: ", model, v)
+	logs.Error("Validation error. Model %v. Field: ", model, v)
 }
 
 func LogModelNotValidError(model string) {
-	logs.Error(nil, "Model validation . Model %v is not valid")
+	logs.Error("Model validation . Model %v is not valid")
 }
 
 func LogError(err error) {
-	logs.Error(nil, "Error. Message: ", err.Error())
+	_, fn, line, _ := runtime.Caller(1)
+	log.Printf("[error] %s:%d %v\n", fn, line, err)
+	logs.Error("Error. Message: ", err.Error())
+}
+
+func LogCmdOut(i string) {
+	logs.Info("CMD Out. Message: ", i)
 }
 
 func LogFormattedError(err error) {

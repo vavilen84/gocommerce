@@ -2,25 +2,37 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/vavilen84/gocommerce/constants"
 	"github.com/vavilen84/gocommerce/env"
+	"github.com/vavilen84/gocommerce/helpers"
 	"github.com/vavilen84/gocommerce/logger"
 	"github.com/vavilen84/gocommerce/store"
 	"os"
-	"os/exec"
+	"path"
+	"sync"
+	"testing"
 )
 
-func beforeTestRun() {
-	setTestAppEnv()
-	err := godotenv.Load("./../.env.development")
-	if err != nil {
-		logger.LogFatal("Error loading .env file")
+func TestMain(m *testing.M) {
+	var once sync.Once
+	onceCall := func() {
+		beforeAllTestRun()
 	}
+	once.Do(onceCall)
+	code := m.Run()
+	os.Exit(code)
+}
 
+func beforeEachTest() {
+	restoreFromDump()
+}
+
+func beforeAllTestRun() {
+	setTestAppEnv()
 	store.InitTestORM()
 	logger.InitLogger()
+	prepareTestDB()
 }
 
 func setTestAppEnv() {
@@ -28,6 +40,49 @@ func setTestAppEnv() {
 	if err != nil {
 		logger.LogError(err)
 	}
+	// allow to run tests from app root & from packages folders
+	err = godotenv.Load(".env.development")
+	if err != nil {
+		err = godotenv.Load("../.env.development")
+		if err != nil {
+			logger.LogFatal("Error loading .env file")
+		}
+	}
+}
+
+func runMigrations() {
+	helpers.RunCmd(
+		"bee",
+		"migrate",
+		"-driver="+env.GetSQLDriver(),
+		"-conn="+env.GetDbDsn(env.GetMySQLTestDb()),
+	)
+}
+
+func restoreFromDump() {
+	helpers.RunCmd(
+		"mysql",
+		"-u"+env.GetMySQLUser(),
+		"-p"+env.GetMySQLUserPass(),
+		env.GetMySQLTestDb(),
+		"<",
+		getDbDumpFile(),
+	)
+}
+
+func getDbDumpFile() string {
+	return path.Join(env.GetAppRoot(), constants.TmpFolder, constants.TestDbDumpFile)
+}
+
+func createDbDump() {
+	os.Remove(getDbDumpFile())
+	helpers.RunCmd(
+		"mysqldump",
+		"-u"+env.GetMySQLUser(),
+		"-p"+env.GetMySQLUserPass(),
+		env.GetMySQLTestDb(),
+		"--result-file="+getDbDumpFile(),
+	)
 }
 
 /**
@@ -35,53 +90,8 @@ func setTestAppEnv() {
  */
 func prepareTestDB() {
 	clearTestDb()
-	err := os.Chdir(os.Getenv(constants.AppRootEnvVar))
-	if err != nil {
-		fmt.Println(err)
-	}
-	cmd := exec.Command(
-		"bee",
-		"migrate",
-		"refresh",
-		"-driver="+env.GetSQLDriver(),
-		"-conn="+env.GetDbDsn(env.GetMySQLTestDb()),
-	)
-	out, err := cmd.Output()
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(string(out))
-
-	cmd = exec.Command(
-		"bee",
-		"migrate",
-		"-driver="+env.GetSQLDriver(),
-		"-conn="+env.GetDbDsn(env.GetMySQLTestDb()),
-	)
-	out, err = cmd.Output()
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(string(out))
-
-	//err := orm.RunSyncdb(constants.DefaultDBAlias, true, true)
-	//if err != nil {
-	//	fmt.Println(err)
-	//}
-
-	//dropAllTablesFromTestDB(ctx, conn)
-	//err := CreateMigrationsTableIfNotExists(ctx, conn)
-	//if err != nil {
-	//	log.Println(err)
-	//}
-	//
-	//err = MigrateUp(ctx, conn)
-	//if err != nil {
-	//	log.Println(err)
-	//}
-	//
-	//LoadFixtures(ctx, conn)
-	//return
+	runMigrations()
+	createDbDump()
 }
 
 /**
