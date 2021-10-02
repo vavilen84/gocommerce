@@ -9,6 +9,16 @@ import (
 	"runtime"
 )
 
+var l *logs.BeeLogger
+
+func InitLogger() {
+	l = logs.NewLogger(10000)
+	err := l.SetLogger("file", `{"filename":"app.log"}`)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 func LogModelFieldNotValidError(model string, v ...interface{}) {
 	logs.Error(nil, "Validation error. Model %v. Field: ", model, v)
 }

@@ -6,17 +6,18 @@ import (
 	"github.com/vavilen84/gocommerce/constants"
 	"github.com/vavilen84/gocommerce/logger"
 	"regexp"
+	"time"
 )
 
 type Product struct {
-	Id    int64  `json:"id" column:"id"`
-	Title string `json:"title" column:"title"`
-	SKU   string `json:"sku" column:"sku"`
-	Price int    `json:"price" column:"price"`
+	Id    int64  `json:"id" orm:"column(id)"`
+	Title string `json:"title" orm:"column(title)"`
+	SKU   string `json:"sku" orm:"column(sku)"`
+	Price int64  `json:"price" orm:"column(price)"`
 
-	CreatedAt int `json:"created_at" column:"created_at"`
-	UpdatedAt int `json:"updated_at" column:"updated_at"`
-	DeletedAt int `json:"deleted_at" column:"deleted_at"`
+	CreatedAt *int64 `json:"created_at" orm:"column(created_at)"`
+	UpdatedAt *int64 `json:"updated_at" orm:"column(updated_at)"`
+	DeletedAt *int64 `json:"deleted_at" orm:"column(deleted_at)"`
 }
 
 func (p Product) validateOnInsert() bool {
@@ -35,11 +36,18 @@ func (p Product) validateOnInsert() bool {
 	return true
 }
 
+func (p *Product) setTimestampsOnCreate() {
+	now := time.Now().Unix()
+	p.CreatedAt = &now
+	p.UpdatedAt = &now
+}
+
 func (p *Product) Insert(o orm.Ormer) error {
 	valid := p.validateOnInsert()
 	if !valid {
 		logger.LogModelNotValidError(constants.ProductModel)
 	}
+	p.setTimestampsOnCreate()
 	_, err := o.Insert(p)
 	if err != nil {
 		logger.LogOrmerError(constants.ProductModel, err)

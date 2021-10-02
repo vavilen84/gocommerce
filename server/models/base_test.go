@@ -4,13 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/beego/beego/v2/adapter/orm"
 	"github.com/joho/godotenv"
 	"github.com/vavilen84/gocommerce/constants"
+	"github.com/vavilen84/gocommerce/env"
 	"github.com/vavilen84/gocommerce/logger"
 	"github.com/vavilen84/gocommerce/store"
 	"log"
 	"os"
+	"os/exec"
 )
 
 func beforeTestRun() {
@@ -21,6 +22,7 @@ func beforeTestRun() {
 	}
 
 	store.InitTestORM()
+	logger.InitLogger()
 }
 
 func setTestAppEnv() {
@@ -34,11 +36,37 @@ func setTestAppEnv() {
  * ! IMPORTANT - dont use for production DB !
  */
 func prepareTestDB() {
-
-	err := orm.RunSyncdb(constants.DefaultDBAlias, true, true)
+	err := os.Chdir(os.Getenv(constants.AppRootEnvVar))
 	if err != nil {
 		fmt.Println(err)
 	}
+	cmd := exec.Command(
+		"bee",
+		"migrate",
+		"reset",
+		"-driver="+env.GetSQLDriver(),
+		"-conn="+env.GetDbDsn(env.GetMySQLTestDb()),
+	)
+	out, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(out))
+	cmd = exec.Command(
+		"bee",
+		"migrate",
+		"-driver="+env.GetSQLDriver(),
+		"-conn="+env.GetDbDsn(env.GetMySQLTestDb()),
+	)
+	out, err = cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(out))
+	//err := orm.RunSyncdb(constants.DefaultDBAlias, true, true)
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
 
 	//dropAllTablesFromTestDB(ctx, conn)
 	//err := CreateMigrationsTableIfNotExists(ctx, conn)
