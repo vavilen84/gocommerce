@@ -6,4 +6,5 @@ import (
 
 func init() {
 	orm.RegisterModel(new(Product))
+	orm.RegisterModel(new(User))
 }

@@ -8,6 +8,7 @@ const (
 	SqlDsnFormat   = `%s:%s@tcp(%s:%s)/%s`
 	TmpFolder      = "tmp"
 	TestDbDumpFile = "test_db_dump.sql"
+	SecretEnvVar   = "SECRET"
 
 	// DEPRECATED! use default db & user for testing purposes
 	// test db & test user
@@ -79,6 +80,7 @@ const (
 	// model names
 	MigrationModel = "Migration"
 	ProductModel   = "Product"
+	UserModel      = "User"
 
 	// field names
 

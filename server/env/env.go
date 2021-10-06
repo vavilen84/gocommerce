@@ -51,3 +51,7 @@ func GetMySQLTestDb() string {
 func GetAppRoot() string {
 	return os.Getenv(constants.AppRootEnvVar)
 }
+
+func GetSecret() string {
+	return os.Getenv(constants.SecretEnvVar)
+}

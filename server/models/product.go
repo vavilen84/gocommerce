@@ -12,22 +12,31 @@ import (
 )
 
 type Product struct {
-	Id    int64  `json:"id" orm:"auto"`
+	Id    int    `json:"id" orm:"auto"`
 	Title string `json:"title" orm:"column(title)"`
 	SKU   string `json:"sku" orm:"column(sku)"`
-	Price int64  `json:"price" orm:"column(price)"`
+	Price int    `json:"price" orm:"column(price)"`
 
-	CreatedAt *int64 `json:"created_at" orm:"column(created_at)"`
-	UpdatedAt *int64 `json:"updated_at" orm:"column(updated_at)"`
-	DeletedAt *int64 `json:"deleted_at" orm:"column(deleted_at)"`
+	CreatedAt int  `json:"created_at" orm:"column(created_at)"`
+	UpdatedAt int  `json:"updated_at" orm:"column(updated_at)"`
+	DeletedAt *int `json:"deleted_at" orm:"column(deleted_at)"`
 }
 
 func (p Product) validateOnInsert() error {
 	valid := validation.Validation{}
-	valid.Required(p.Title, "title_required")
-	valid.Required(p.SKU, "sku_required")
-	valid.Match(p.SKU, regexp.MustCompile(`^[a-z0-9_-]*$`), "sku_match")
-	valid.Required(p.Price, "price_required")
+
+	valid.MaxSize(p.Title, 255, "title")
+	valid.Required(p.Title, "title")
+
+	valid.MaxSize(p.SKU, 255, "title")
+	valid.Required(p.SKU, "sku")
+
+	valid.Match(p.SKU, regexp.MustCompile(`^[a-z0-9_-]*$`), "sku")
+
+	valid.Required(p.Price, "price")
+
+	valid.Required(p.CreatedAt, "created_at")
+	valid.Required(p.UpdatedAt, "updated_at")
 
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
@@ -40,18 +49,18 @@ func (p Product) validateOnInsert() error {
 }
 
 func (p *Product) setTimestampsOnCreate() {
-	now := time.Now().Unix()
-	p.CreatedAt = &now
-	p.UpdatedAt = &now
+	now := int(time.Now().Unix())
+	p.CreatedAt = now
+	p.UpdatedAt = now
 }
 
 func (p *Product) Insert(o orm.Ormer) error {
+	p.setTimestampsOnCreate()
 	err := p.validateOnInsert()
 	if err != nil {
 		logger.LogError(err)
 		return err
 	}
-	p.setTimestampsOnCreate()
 	_, err = o.Insert(p)
 	if err != nil {
 		logger.LogOrmerError(constants.ProductModel, err)
